@@ -1,6 +1,14 @@
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
+import 'package:todo/src/misc/dotenv.dart';
+import 'package:todo/src/services/firebase.dart';
 
-void main() {
+import 'src/models/todo.dart';
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await FirebaseService.init();
+  await Dotenv().init();
   runApp(const MyApp());
 }
 
@@ -13,17 +21,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primarySwatch: Colors.blue,
-      ),
+          colorScheme: ColorScheme.fromSeed(
+              seedColor: Color(int.parse(FirebaseRemoteConfig.instance
+                  .getString("importance_color"))))),
       home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
@@ -49,9 +49,15 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
-
+  List<Todo> todos = [];
   void _incrementCounter() {
     setState(() {
+      todos.add(Todo(
+          id: _counter,
+          text: "Задача №$_counter",
+          createdAt: DateTime.now(),
+          changedAt: DateTime.now(),
+          lastUpdatedBy: 'me'));
       // This call to setState tells the Flutter framework that something has
       // changed in this State, which causes it to rerun the build method below
       // so that the display can reflect the updated values. If we changed
@@ -102,6 +108,13 @@ class _MyHomePageState extends State<MyHomePage> {
               '$_counter',
               style: Theme.of(context).textTheme.headline4,
             ),
+            for (final todo in todos)
+              Card(
+                  child: ListTile(
+                leading: Text(todo.createdAt.toString()),
+                title: Text(todo.text),
+                trailing: Text(todo.lastUpdatedBy.toString()),
+              ))
           ],
         ),
       ),
