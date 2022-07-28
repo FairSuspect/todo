@@ -1,3 +1,5 @@
+// ignore_for_file: invalid_annotation_target
+
 import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -7,16 +9,16 @@ part 'todo.freezed.dart';
 // But if Person was not serializable, we could skip it.
 part 'todo.g.dart';
 
-@freezed
+@Freezed()
 class Todo with _$Todo {
   const factory Todo({
-    required int id,
+    String? id,
     required String text,
     @Default(Importance.low) Importance importance,
     @Default(false) bool done,
-    required DateTime createdAt,
-    required DateTime changedAt,
-    required Object? lastUpdatedBy,
+    @JsonKey(name: 'created_at') int? createdAt,
+    @JsonKey(name: 'changed_at') int? changedAt,
+    @JsonKey(name: 'last_updated_by') String? lastUpdatedBy,
   }) = _Todo;
 
   factory Todo.fromJson(Map<String, Object?> json) => _$TodoFromJson(json);

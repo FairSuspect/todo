@@ -1,5 +1,7 @@
+import 'package:dio/dio.dart';
 import 'package:todo/src/api/api.dart';
 import 'package:todo/src/models/todo.dart';
+import 'package:uuid/uuid.dart';
 
 class TodoService {
   static TodoService? _instance;
@@ -7,17 +9,19 @@ class TodoService {
   factory TodoService() => _instance ??= TodoService._();
 
   TodoService._();
+  int lastKnownRevision = 0;
 
   Future<Todo> getItemById(int id) async {
-    final response = await Api().dio.get('list/$id');
+    final response = await Api().dio.get('/list/$id');
 
     return Todo.fromJson(response.data);
   }
 
   Future<List<Todo>> getItemList() async {
-    final response = await Api().dio.get('lib');
+    final response = await Api().dio.get('/list');
 
-    return Todo.listFromJson(response.data);
+    lastKnownRevision = response.data['revision'];
+    return Todo.listFromJson(response.data['list']);
   }
 
   Future<List<Todo>> patchList(List<Todo> todos) async {
@@ -27,8 +31,16 @@ class TodoService {
   }
 
   Future<Todo> createTodo(Todo todo) async {
-    final response = await Api().dio.post('/list', data: todo.toJson());
-    return Todo.fromJson(response.data);
+    todo = todo.copyWith(
+        id: (lastKnownRevision + 1).toString(),
+        lastUpdatedBy: const Uuid().v4());
+    final todoJson = todo.toJson();
+    final response = await Api().dio.post('/list',
+        data: {"element": todoJson},
+        options:
+            Options(headers: {'X-Last-Known-Revision': lastKnownRevision}));
+    lastKnownRevision = response.data['revision'];
+    return Todo.fromJson(response.data['element']);
   }
 
   Future<Todo> updateTodo(Todo todo) async {
@@ -40,5 +52,12 @@ class TodoService {
   Future<Todo> deleteTodo(int id) async {
     final response = await Api().dio.delete('/list/$id');
     return Todo.fromJson(response.data);
+  }
+
+  Map assembleRequest(Todo model, {int? revision}) {
+    Map<String, dynamic> request = {"element": model.toJson(), "status": "ok"};
+
+    if (revision != null) request['revision'] = revision;
+    return request;
   }
 }
