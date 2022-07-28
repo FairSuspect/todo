@@ -44,10 +44,13 @@ dependencies:
   firebase_analytics: ^9.2.1
   provider: ^6.0.3
   uuid: ^3.0.6
+  intl: ^0.17.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  flutter_localizations: 
+    sdk: flutter        
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -64,7 +67,7 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
-
+  generate: true
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
