@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:todo/src/misc/dotenv.dart';
+import 'package:todo/src/misc/theme/dark_theme.dart';
+import 'package:todo/src/misc/theme/light_theme.dart';
 import 'package:todo/src/services/firebase.dart';
 import 'package:todo/src/services/navigation.dart';
 import 'package:todo/src/services/scaffold_messenger_serivce.dart';
@@ -30,11 +32,11 @@ class MyApp extends StatelessWidget {
         title: 'Flutter Demo',
         navigatorKey: Navigation().key,
         scaffoldMessengerKey: ScaffoldMessengerService().scaffoldMessengerKey,
-        theme: ThemeData(checkboxTheme: const CheckboxThemeData()
-            // colorScheme: ColorScheme.fromSeed(
-            //     seedColor: Color(int.parse(
-            //         FirebaseRemoteConfig.instance.getString("importance_color")))),
-            ),
+        // colorScheme: ColorScheme.fromSeed(
+        //     seedColor: Color(int.parse(
+        //         FirebaseRemoteConfig.instance.getString("importance_color")))),
+        theme: lightTheme,
+        darkTheme: darkTheme,
         localizationsDelegates: const [
           AppLocalizations.delegate,
           GlobalMaterialLocalizations.delegate,
