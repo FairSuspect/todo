@@ -3,10 +3,17 @@ import 'package:flutter/material.dart';
 import 'extensions.dart';
 
 final lightTheme = ThemeData(
-    primaryColor: _primary,
+    primaryColor: _labelPrimary,
+    backgroundColor: _backPrimary,
+    appBarTheme: const AppBarTheme(backgroundColor: _backPrimary),
     colorScheme: ColorScheme.fromSeed(
-        seedColor: _primary, secondary: _secondary, tertiary: _tertiary),
-    disabledColor: _disable,
+      seedColor: _blue,
+      background: _backPrimary,
+      onPrimary: _labelPrimary,
+      onSecondary: _labelSecondary,
+      surface: _backsecondary,
+    ),
+    disabledColor: _labelDisable,
     extensions: [
       CustomColors(
         red: _red,
@@ -28,10 +35,10 @@ const Color _separator = Color(0x33000000);
 /// Support [Light] / Overlay
 const Color _overlay = Color(0x0F000000);
 
-const Color _primary = Color(0xFF000000);
-const Color _secondary = Color(0x99000000);
-const Color _tertiary = Color(0x4D000000);
-const Color _disable = Color(0x26000000);
+const Color _labelPrimary = Color(0xFF000000);
+const Color _labelSecondary = Color(0x99000000);
+const Color _labelTertiary = Color(0x4D000000);
+const Color _labelDisable = Color(0x26000000);
 
 /// Color [Light] / Red
 const Color _red = Color(0xFFFF3B30);
@@ -50,3 +57,12 @@ const Color _grayLight = Color(0xFFD1D1D6);
 
 /// Color [Light] / White
 const Color _white = Color(0xFFFFFFFF);
+
+///Back [Light] / Primary
+const Color _backPrimary = Color(0xFFF7F6F2);
+
+///Back [Light] / Secondary
+const Color _backsecondary = Color(0xFFF7F6F2);
+
+///Back [Light] / Elevated
+const Color _backElevated = Color(0xFFFFFFFF);

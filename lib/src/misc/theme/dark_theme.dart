@@ -4,8 +4,14 @@ import 'extensions.dart';
 
 final darkTheme = ThemeData(
     primaryColor: _primary,
+    appBarTheme: AppBarTheme(backgroundColor: _backPrimary),
     colorScheme: ColorScheme.fromSeed(
-        seedColor: _primary, secondary: _secondary, tertiary: _tertiary),
+      seedColor: _primary,
+      secondary: _secondary,
+      tertiary: _tertiary,
+      background: _backPrimary,
+      surface: _backsecondary,
+    ),
     disabledColor: _disable,
     extensions: [
       CustomColors(
@@ -50,3 +56,12 @@ const Color _grayLight = Color(0xFF48484A);
 
 /// Color [Light] / White
 const Color _white = Color(0xFFFFFFFF);
+
+/// Back [Dark] / Primary
+const Color _backPrimary = Color(0xFF16161B);
+
+/// Back [Dark] / Secondary
+const Color _backsecondary = Color(0xFF252528);
+
+/// Back [Dark] / Elevated
+const Color _backElevated = Color(0xFF3C3C3F);
