@@ -19,20 +19,22 @@ final lightTheme = ThemeData(
   floatingActionButtonTheme: const FloatingActionButtonThemeData(
     backgroundColor: _blue,
   ),
-  extensions: [
-    CustomColors(
-      red: _red,
-      green: _green,
-      blue: _blue,
-      gray: _gray,
-      grayLight: _grayLight,
-      white: _white,
-    ),
-    LayoutColors(
-      seperatorColor: _separator,
-      overlayColor: _overlay,
-    ),
-  ],
+  // extensions: [
+  //   customColorsLight,
+  //   layoutColorsLight,
+  // ],
+);
+final customColorsLight = CustomColors(
+  red: _red,
+  green: _green,
+  blue: _blue,
+  gray: _gray,
+  grayLight: _grayLight,
+  white: _white,
+);
+final layoutColorsLight = LayoutColors(
+  seperatorColor: _separator,
+  overlayColor: _overlay,
 );
 
 /// Support [Light] / Separator

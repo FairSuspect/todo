@@ -3,8 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:todo/src/misc/dotenv.dart';
-import 'package:todo/src/misc/theme/dark_theme.dart';
-import 'package:todo/src/misc/theme/light_theme.dart';
+import 'package:todo/src/misc/theme/theme.dart';
 import 'package:todo/src/services/firebase.dart';
 import 'package:todo/src/services/navigation.dart';
 import 'package:todo/src/services/scaffold_messenger_serivce.dart';
@@ -16,7 +15,9 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  if (Platform.isAndroid || Platform.isIOS) await FirebaseService.init();
+  if (Platform.isAndroid || Platform.isIOS) {
+    await FirebaseService.init();
+  }
 
   await Dotenv().init();
   runApp(const MyApp());
@@ -28,15 +29,26 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    late final Color? importanceColor;
+    if (Platform.isAndroid || Platform.isIOS) {
+      importanceColor = FirebaseService.fetchImportanceColor();
+    } else {
+      importanceColor = null;
+    }
     return MaterialApp(
-        title: 'Flutter Demo',
         navigatorKey: Navigation().key,
         scaffoldMessengerKey: ScaffoldMessengerService().scaffoldMessengerKey,
         // colorScheme: ColorScheme.fromSeed(
         //     seedColor: Color(int.parse(
         //         FirebaseRemoteConfig.instance.getString("importance_color")))),
-        theme: lightTheme,
+        theme: lightTheme.copyWith(extensions: [
+          customColorsLight.copyWith(red: importanceColor),
+          layoutColorsLight
+        ]),
         darkTheme: darkTheme,
+        themeMode: ThemeMode.light,
+        onGenerateTitle: (context) => AppLocalizations.of(context).title,
+        locale: Locale("ru", "RU"),
         localizationsDelegates: const [
           AppLocalizations.delegate,
           GlobalMaterialLocalizations.delegate,
