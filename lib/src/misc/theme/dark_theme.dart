@@ -3,30 +3,37 @@ import 'package:flutter/material.dart';
 import 'extensions.dart';
 
 final darkTheme = ThemeData(
-    primaryColor: _primary,
-    appBarTheme: AppBarTheme(backgroundColor: _backPrimary),
-    colorScheme: ColorScheme.fromSeed(
-      seedColor: _primary,
-      secondary: _secondary,
-      tertiary: _tertiary,
-      background: _backPrimary,
-      surface: _backsecondary,
+  primaryColor: _labelPrimary,
+  backgroundColor: _backPrimary,
+  scaffoldBackgroundColor: _backPrimary,
+  appBarTheme: const AppBarTheme(backgroundColor: _backPrimary),
+  colorScheme: ColorScheme.fromSeed(
+    seedColor: _blue,
+    background: _backPrimary,
+    onPrimary: _labelPrimary,
+    onSecondary: _labelSecondary,
+    surface: _backsecondary,
+  ),
+  iconTheme: const IconThemeData(color: _blue),
+  disabledColor: _labelDisable,
+  floatingActionButtonTheme: const FloatingActionButtonThemeData(
+    backgroundColor: _blue,
+  ),
+  extensions: [
+    CustomColors(
+      red: _red,
+      green: _green,
+      blue: _blue,
+      gray: _gray,
+      grayLight: _grayLight,
+      white: _white,
     ),
-    disabledColor: _disable,
-    extensions: [
-      CustomColors(
-        red: _red,
-        green: _green,
-        blue: _blue,
-        gray: _gray,
-        grayLight: _grayLight,
-        white: _white,
-      ),
-      LayoutColors(
-        seperatorColor: _separator,
-        overlayColor: _overlay,
-      ),
-    ]);
+    LayoutColors(
+      seperatorColor: _separator,
+      overlayColor: _overlay,
+    ),
+  ],
+);
 
 /// Support [Light] / Separator
 const Color _separator = Color(0x330FFFFF);
@@ -34,10 +41,10 @@ const Color _separator = Color(0x330FFFFF);
 /// Support [Light] / Overlay
 const Color _overlay = Color(0x52000000);
 
-const Color _primary = Color(0xFFFFFFFF);
-const Color _secondary = Color(0x99FFFFFF);
-const Color _tertiary = Color(0x66FFFFFF);
-const Color _disable = Color(0x26FFFFFF);
+const Color _labelPrimary = Color(0xFFFFFFFF);
+const Color _labelSecondary = Color(0x99FFFFFF);
+const Color _labelTertiary = Color(0x66FFFFFF);
+const Color _labelDisable = Color(0x26FFFFFF);
 
 /// Color [Light] / Red
 const Color _red = Color(0xFFFF453A);

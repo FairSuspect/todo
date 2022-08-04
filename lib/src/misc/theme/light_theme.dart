@@ -3,31 +3,37 @@ import 'package:flutter/material.dart';
 import 'extensions.dart';
 
 final lightTheme = ThemeData(
-    primaryColor: _labelPrimary,
-    backgroundColor: _backPrimary,
-    appBarTheme: const AppBarTheme(backgroundColor: _backPrimary),
-    colorScheme: ColorScheme.fromSeed(
-      seedColor: _blue,
-      background: _backPrimary,
-      onPrimary: _labelPrimary,
-      onSecondary: _labelSecondary,
-      surface: _backsecondary,
+  primaryColor: _labelPrimary,
+  backgroundColor: _backPrimary,
+  scaffoldBackgroundColor: _backPrimary,
+  appBarTheme: const AppBarTheme(backgroundColor: _backPrimary),
+  colorScheme: ColorScheme.fromSeed(
+    seedColor: _blue,
+    background: _backPrimary,
+    onPrimary: _labelPrimary,
+    onSecondary: _labelSecondary,
+    surface: _backsecondary,
+  ),
+  iconTheme: const IconThemeData(color: _blue),
+  disabledColor: _labelDisable,
+  floatingActionButtonTheme: const FloatingActionButtonThemeData(
+    backgroundColor: _blue,
+  ),
+  extensions: [
+    CustomColors(
+      red: _red,
+      green: _green,
+      blue: _blue,
+      gray: _gray,
+      grayLight: _grayLight,
+      white: _white,
     ),
-    disabledColor: _labelDisable,
-    extensions: [
-      CustomColors(
-        red: _red,
-        green: _green,
-        blue: _blue,
-        gray: _gray,
-        grayLight: _grayLight,
-        white: _white,
-      ),
-      LayoutColors(
-        seperatorColor: _separator,
-        overlayColor: _overlay,
-      ),
-    ]);
+    LayoutColors(
+      seperatorColor: _separator,
+      overlayColor: _overlay,
+    ),
+  ],
+);
 
 /// Support [Light] / Separator
 const Color _separator = Color(0x33000000);
