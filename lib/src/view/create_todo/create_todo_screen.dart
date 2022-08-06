@@ -94,17 +94,50 @@ class ImportanceSelector extends StatelessWidget {
         Text(AppLocalizations.of(context).importance),
         Consumer<CreateTodoController>(builder: (context, controller, child) {
           return DropdownButton<Importance>(
+            underline: const SizedBox.shrink(),
+            icon: const SizedBox.shrink(),
             value: controller.todo?.importance,
-            items: Importance.values
-                .map((e) => DropdownMenuItem(
-                      value: e,
-                      child: Text(e.toString()),
-                    ))
-                .toList(),
+            items: Importance.values.map((importance) {
+              return DropdownMenuItem(
+                value: importance,
+                child: importance == Importance.important
+                    ? ImportantDropDownChild(
+                        text: translateImportance(context, importance),
+                      )
+                    : Text(translateImportance(context, importance)),
+              );
+            }).toList(),
             onChanged: controller.setImportance,
           );
         })
       ],
+    );
+  }
+
+  String translateImportance(BuildContext context, Importance importance) {
+    final tr = AppLocalizations.of(context);
+    switch (importance) {
+      case Importance.low:
+        return tr.importanceNone;
+      case Importance.important:
+        return tr.importanceHigh;
+
+      case Importance.basic:
+      default:
+        return tr.importanceBasic;
+    }
+  }
+}
+
+class ImportantDropDownChild extends StatelessWidget {
+  const ImportantDropDownChild({Key? key, required this.text})
+      : super(key: key);
+  final String text;
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      "!! $text",
+      style: TextStyle(color: Theme.of(context).extension<CustomColors>()?.red),
     );
   }
 }
@@ -144,7 +177,7 @@ class DeleteRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final redColor = Theme.of(context).extension<CustomColors>()!.red;
+    final redColor = Theme.of(context).errorColor;
     final color = onTap != null ? redColor : theme.disabledColor;
     return ListTile(
       textColor: color,
