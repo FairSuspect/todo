@@ -53,14 +53,12 @@ class TodoListController extends ChangeNotifier
                 child: const CreateTodoScreen())));
     if (newTodo == null) return;
     if (selectedTodo == null) {
-      todos.add(newTodo);
-      service.createTodo(newTodo);
-      notifyListeners();
+      createTodo(newTodo);
+      return;
     } else {
-      todos[selectedIndex!] = newTodo;
-      notifyListeners();
-      service.updateTodo(selectedTodo!);
+      updateTodo(newTodo);
       selectedIndex = null;
+      return;
     }
   }
 
@@ -88,5 +86,25 @@ class TodoListController extends ChangeNotifier
   void onTodoSelected(int index) {
     selectedIndex = index;
     onPressed();
+  }
+
+  @override
+  void createTodoFromText(String text) {
+    final todo = Todo(text: text);
+    createTodo(todo);
+  }
+
+  @override
+  void createTodo(Todo todo) {
+    todos.add(todo);
+    service.createTodo(todo);
+    notifyListeners();
+  }
+
+  @override
+  void updateTodo(Todo todo) {
+    todos[selectedIndex!] = todo;
+    notifyListeners();
+    service.updateTodo(selectedTodo!);
   }
 }

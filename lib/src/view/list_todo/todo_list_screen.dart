@@ -3,6 +3,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:sliver_tools/sliver_tools.dart';
 import 'package:todo/src/misc/theme/custom_colors.dart';
+import 'package:todo/src/view/add_todo_tile.dart';
 import 'package:todo/src/view/todo_tile.dart';
 
 import 'app_bar.dart';
@@ -44,19 +45,26 @@ class TodoListScreen extends StatelessWidget {
                       )),
                       SliverList(
                         delegate: SliverChildBuilderDelegate(
-                          (_, index) => TodoTile(
-                              key: ValueKey(controller.filteredTodos[index].id),
-                              todo: controller.filteredTodos[index],
-                              onChanged: (value) {
-                                controller.onChecked(index, value);
-                              },
-                              onDelete: () {
-                                controller.onDelete(index);
-                              },
-                              onTap: () {
-                                controller.onTodoSelected(index);
-                              }),
-                          childCount: controller.filteredTodos.length,
+                          (_, index) {
+                            if (index == controller.filteredTodos.length) {
+                              return AddTodoTile(
+                                  onSubmitted: controller.createTodoFromText);
+                            }
+                            return TodoTile(
+                                key: ValueKey(
+                                    controller.filteredTodos[index].id),
+                                todo: controller.filteredTodos[index],
+                                onChanged: (value) {
+                                  controller.onChecked(index, value);
+                                },
+                                onDelete: () {
+                                  controller.onDelete(index);
+                                },
+                                onTap: () {
+                                  controller.onTodoSelected(index);
+                                });
+                          },
+                          childCount: controller.filteredTodos.length + 1,
                         ),
                       ),
                     ],
