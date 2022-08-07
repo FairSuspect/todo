@@ -23,10 +23,10 @@ class TodoTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.extension<CustomColors>()!;
-    final doneStyle = TextStyle(
+    final doneStyle = theme.textTheme.bodyMedium!.merge(TextStyle(
       decoration: TextDecoration.lineThrough,
       color: theme.colorScheme.onTertiary,
-    );
+    ));
 
     return Dismissible(
       key: key!,
@@ -44,8 +44,9 @@ class TodoTile extends StatelessWidget {
         onDelete?.call();
       },
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12.0),
+        padding: const EdgeInsets.only(left: 6.0, right: 14.0),
         child: ListTile(
+          horizontalTitleGap: 4,
           contentPadding: EdgeInsets.zero,
           visualDensity: VisualDensity.comfortable,
           leading: Checkbox(
@@ -62,7 +63,7 @@ class TodoTile extends StatelessWidget {
               Expanded(
                 child: Text(
                   todo.text,
-                  style: todo.done ? doneStyle : null,
+                  style: todo.done ? doneStyle : theme.textTheme.bodyMedium,
                   maxLines: 3,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -70,8 +71,12 @@ class TodoTile extends StatelessWidget {
             ],
           ),
           subtitle: deadline != null
-              ? Text(DateFormat.yMMMMd(AppLocalizations.of(context).localeName)
-                  .format(deadline!))
+              ? Text(
+                  DateFormat.yMMMMd(AppLocalizations.of(context).localeName)
+                      .format(deadline!),
+                  style: theme.textTheme.titleSmall!
+                      .copyWith(color: theme.colorScheme.onTertiary),
+                )
               : null,
           trailing: const Icon(Icons.info_outline),
           onTap: onTap,
@@ -93,6 +98,7 @@ class LeadingIconByImportance extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     Widget icon;
     switch (importance) {
       case Importance.important:
@@ -127,8 +133,8 @@ class CheckBackground extends StatelessWidget {
         alignment: Alignment.centerLeft,
         child: Icon(
           Icons.check,
-          size: 36,
-          color: Theme.of(context).colorScheme.onTertiary,
+          size: 24,
+          color: Theme.of(context).extension<CustomColors>()?.white,
         ),
       ),
     );
@@ -140,16 +146,16 @@ class DeleteBackground extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Container(
       padding: const EdgeInsets.only(right: 24),
-      decoration: BoxDecoration(
-          color: Theme.of(context).extension<CustomColors>()?.red),
+      decoration: BoxDecoration(color: theme.extension<CustomColors>()?.red),
       child: Align(
         alignment: Alignment.centerRight,
         child: Icon(
           Icons.delete,
-          size: 36,
-          color: Theme.of(context).colorScheme.onError,
+          size: 24,
+          color: theme.extension<CustomColors>()?.white,
         ),
       ),
     );
