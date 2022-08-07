@@ -14,10 +14,11 @@ class AddTodoTile extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12.0),
       child: ListTile(
-        contentPadding: EdgeInsets.zero,
-        leading: const Icon(Icons.add),
+        contentPadding: const EdgeInsets.only(left: 6),
+        leading: const SizedBox.shrink(),
         title: TextFormField(
-          decoration: InputDecoration(hintText: tr.newTask),
+          decoration:
+              InputDecoration(hintText: tr.newTask, border: InputBorder.none),
           onFieldSubmitted: onSubmitted,
           textInputAction: TextInputAction.done,
           maxLines: 1,
