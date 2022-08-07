@@ -74,7 +74,7 @@ class AppBarDelegate extends SliverPersistentHeaderDelegate {
                 bottom: 0,
                 child: IconButton(
                   padding:
-                      const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
+                      const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
                   icon: controller.showDone
                       ? const Icon(Icons.visibility_off)
                       : const Icon(Icons.visibility),
