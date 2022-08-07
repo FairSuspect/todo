@@ -1,7 +1,6 @@
-import 'package:todo/src/services/todo_service.dart';
+import 'package:todo/src/models/todo.dart';
+import 'package:todo/src/services/remote_service/todo_service.dart';
 import 'package:uuid/uuid.dart';
-
-import '../models/todo.dart';
 
 class MockTodoService extends TodoService {
   MockTodoService();
@@ -58,7 +57,8 @@ class MockTodoService extends TodoService {
   @override
   Future<Todo> deleteTodo(String id) async {
     final index = _todos.indexWhere((element) => element.id == id);
-    final removedTodo = _todos.removeAt(index);
-    return removedTodo;
+    // final removedTodo = _todos.elementAt(index);
+    // return removedTodo;
+    return Todo(text: '   ');
   }
 }

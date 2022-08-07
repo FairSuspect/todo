@@ -1,7 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:todo/src/api/api.dart';
 import 'package:todo/src/models/todo.dart';
-import 'package:uuid/uuid.dart';
 
 class TodoService {
   int _lastKnownRevision = 0;
@@ -10,7 +9,6 @@ class TodoService {
 
   set lastKnownRevision(int lastKnownRevision) {
     _lastKnownRevision = lastKnownRevision;
-    print("revision updated: $_lastKnownRevision");
   }
 
   Future<Todo> getItemById(String id) async {
@@ -28,17 +26,14 @@ class TodoService {
 
   Future<List<Todo>> patchList(List<Todo> todos) async {
     final data = todos.map((e) => e.toJson()).toList();
-    final response = await Api().dio.patch('/list', data: data);
-    return Todo.listFromJson(response.data);
+    final response = await Api().dio.patch('/list',
+        data: {"list": data},
+        options:
+            Options(headers: {'X-Last-Known-Revision': lastKnownRevision}));
+    return Todo.listFromJson(response.data['list']);
   }
 
   Future<Todo> createTodo(Todo todo) async {
-    final dateCreated = DateTime.now().millisecondsSinceEpoch ~/ 1000;
-    todo = todo.copyWith(
-        id: const Uuid().v4(),
-        lastUpdatedBy: "debug",
-        createdAt: dateCreated,
-        changedAt: dateCreated);
     final todoJson = todo.toJson();
     late final Response response;
     try {
@@ -46,25 +41,42 @@ class TodoService {
           data: {"element": todoJson},
           options:
               Options(headers: {'X-Last-Known-Revision': lastKnownRevision}));
-    } on DioError {
-      await updateRevision();
-      response = await Api().dio.post('/list',
-          data: {"element": todoJson},
-          options:
-              Options(headers: {'X-Last-Known-Revision': lastKnownRevision}));
-    } finally {
-      lastKnownRevision = response.data['revision'] ?? lastKnownRevision;
+    } on DioError catch (e) {
+      if (e.response?.statusCode == 400) {
+        await updateRevision();
+        response = await Api().dio.post('/list',
+            data: {"element": todoJson},
+            options:
+                Options(headers: {'X-Last-Known-Revision': lastKnownRevision}));
+      } else {
+        rethrow;
+      }
     }
+    lastKnownRevision = response.data['revision'] ?? lastKnownRevision;
+
     return Todo.fromJson(response.data['element']);
   }
 
   Future<Todo> updateTodo(Todo todo) async {
-    final response = await Api().dio.put('/list/${todo.id}',
-        data: {"element": todo.toJson()},
-        options:
-            Options(headers: {'X-Last-Known-Revision': lastKnownRevision}));
-    lastKnownRevision = response.data['revision'] ?? lastKnownRevision;
+    late final Response response;
+    try {
+      response = await Api().dio.put('/list/${todo.id}',
+          data: {"element": todo.toJson()},
+          options:
+              Options(headers: {'X-Last-Known-Revision': lastKnownRevision}));
+    } on DioError catch (e) {
+      if (e.response?.statusCode == 400) {
+        await updateRevision();
+        response = await Api().dio.put('/list/${todo.id}',
+            data: {"element": todo.toJson()},
+            options:
+                Options(headers: {'X-Last-Known-Revision': lastKnownRevision}));
+      } else {
+        rethrow;
+      }
+    }
 
+    lastKnownRevision = response.data['revision'] ?? lastKnownRevision;
     return Todo.fromJson(response.data['element']);
   }
 
