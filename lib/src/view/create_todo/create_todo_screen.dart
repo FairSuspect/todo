@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:todo/src/misc/extensions/todo.dart';
 import 'package:todo/src/misc/theme/extensions.dart';
 import 'package:todo/src/misc/validators/text_input_validators.dart';
 import 'package:todo/src/models/todo.dart';
@@ -102,9 +103,9 @@ class ImportanceSelector extends StatelessWidget {
                 value: importance,
                 child: importance == Importance.important
                     ? ImportantDropDownChild(
-                        text: translateImportance(context, importance),
+                        text: importance.translateImportance(context),
                       )
-                    : Text(translateImportance(context, importance)),
+                    : Text(importance.translateImportance(context)),
               );
             }).toList(),
             onChanged: controller.setImportance,
@@ -112,20 +113,6 @@ class ImportanceSelector extends StatelessWidget {
         })
       ],
     );
-  }
-
-  String translateImportance(BuildContext context, Importance importance) {
-    final tr = AppLocalizations.of(context);
-    switch (importance) {
-      case Importance.low:
-        return tr.importanceNone;
-      case Importance.important:
-        return tr.importanceHigh;
-
-      case Importance.basic:
-      default:
-        return tr.importanceBasic;
-    }
   }
 }
 
