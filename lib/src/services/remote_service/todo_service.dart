@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:todo/src/api/api.dart';
 import 'package:todo/src/models/todo.dart';
+import 'package:todo/src/services/remote_service/api_path.dart';
 
 class TodoService {
   int _lastKnownRevision = 0;
@@ -14,13 +15,13 @@ class TodoService {
   }
 
   Future<Todo> getItemById(String id) async {
-    final response = await Api().dio.get('/list/$id');
+    final response = await Api().dio.get(ApiPath.getById(id));
 
     return Todo.fromJson(response.data);
   }
 
   Future<List<Todo>> getItemList() async {
-    final response = await Api().dio.get('/list');
+    final response = await Api().dio.get(ApiPath.getList);
 
     lastKnownRevision = response.data['revision'];
     return Todo.listFromJson(response.data['list']);
@@ -28,9 +29,11 @@ class TodoService {
 
   Future<List<Todo>> patchList(List<Todo> todos) async {
     final data = todos.map((e) => e.toJson()).toList();
-    final response = await Api().dio.patch('/list',
-        data: {"list": data},
-        options: Options(headers: {_revisionHeader: lastKnownRevision}));
+    final response = await Api().dio.patch(
+          ApiPath.patchList,
+          data: {"list": data},
+          options: Options(headers: {_revisionHeader: lastKnownRevision}),
+        );
     return Todo.listFromJson(response.data['list']);
   }
 
@@ -38,50 +41,60 @@ class TodoService {
     final todoJson = todo.toJson();
     late final Response response;
     try {
-      response = await Api().dio.post('/list',
-          data: {"element": todoJson},
-          options: Options(headers: {_revisionHeader: lastKnownRevision}));
+      response = await Api().dio.post(
+            ApiPath.create,
+            data: {"element": todoJson},
+            options: Options(headers: {_revisionHeader: lastKnownRevision}),
+          );
     } on DioError catch (e) {
       if (e.response?.statusCode == 400) {
         await updateRevision();
-        response = await Api().dio.post('/list',
-            data: {"element": todoJson},
-            options: Options(headers: {_revisionHeader: lastKnownRevision}));
+        response = await Api().dio.post(
+              ApiPath.create,
+              data: {"element": todoJson},
+              options: Options(headers: {_revisionHeader: lastKnownRevision}),
+            );
       } else {
         rethrow;
       }
     }
     lastKnownRevision = response.data['revision'] ?? lastKnownRevision;
 
-    return Todo.fromJson(response.data['element']);
+    return Todo.fromJson(response.data);
   }
 
   Future<Todo> updateTodo(Todo todo) async {
     late final Response response;
     try {
-      response = await Api().dio.put('/list/${todo.id}',
-          data: {"element": todo.toJson()},
-          options: Options(headers: {_revisionHeader: lastKnownRevision}));
+      response = await Api().dio.put(
+            ApiPath.put(todo.id!),
+            data: {"element": todo.toJson()},
+            options: Options(headers: {_revisionHeader: lastKnownRevision}),
+          );
     } on DioError catch (e) {
       if (e.response?.statusCode == 400) {
         await updateRevision();
-        response = await Api().dio.put('/list/${todo.id}',
-            data: {"element": todo.toJson()},
-            options: Options(headers: {_revisionHeader: lastKnownRevision}));
+        response = await Api().dio.put(
+              ApiPath.put(todo.id!),
+              data: {"element": todo.toJson()},
+              options: Options(headers: {_revisionHeader: lastKnownRevision}),
+            );
       } else {
         rethrow;
       }
     }
 
     lastKnownRevision = response.data['revision'] ?? lastKnownRevision;
-    return Todo.fromJson(response.data['element']);
+    return Todo.fromJson(response.data);
   }
 
   Future<Todo> deleteTodo(String id) async {
-    final response = await Api().dio.delete('/list/$id',
-        options: Options(headers: {_revisionHeader: lastKnownRevision}));
+    final response = await Api().dio.delete(
+          ApiPath.delete(id),
+          options: Options(headers: {_revisionHeader: lastKnownRevision}),
+        );
     lastKnownRevision = response.data['revision'] ?? lastKnownRevision;
-    return Todo.fromJson(response.data['element']);
+    return Todo.fromJson(response.data);
   }
 
   Map assembleRequest(Todo model, {int? revision}) {
@@ -92,7 +105,7 @@ class TodoService {
   }
 
   Future updateRevision() async {
-    final response = await Api().dio.get('/list');
+    final response = await Api().dio.get(ApiPath.revision);
 
     lastKnownRevision = response.data['revision'];
   }
