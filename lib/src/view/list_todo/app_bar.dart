@@ -56,13 +56,15 @@ class AppBarDelegate extends SliverPersistentHeaderDelegate {
             // Текст "Выполнено - {count}"
             Consumer<TodoListBaseController>(
                 builder: (context, controller, child) {
+              final theme = Theme.of(context);
               return Positioned(
                 left: leftShift,
                 bottom: 18,
                 child: Opacity(
                   opacity: lerpDouble(1, 0.0, ratio) ?? 0,
                   child: Text("$subtitle — ${controller.completedCount}",
-                      style: Theme.of(context).textTheme.titleMedium),
+                      style: theme.textTheme.titleMedium
+                          ?.copyWith(color: theme.colorScheme.onTertiary)),
                 ),
               );
             }),
