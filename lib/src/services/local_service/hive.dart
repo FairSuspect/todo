@@ -25,7 +25,6 @@ class HiveService implements LocalService<Todo> {
   @override
   set lastKnownRevision(int lastKnownRevision) {
     _lastKnownRevision = lastKnownRevision;
-    print("local revision updated: $_lastKnownRevision");
     storeRevision(lastKnownRevision);
   }
 
@@ -36,13 +35,8 @@ class HiveService implements LocalService<Todo> {
         path: _hivePath);
     final revisionBox = await collection.openBox<int>(_revisionBoxName);
     await revisionBox.put(_revisionKey, lastKnownRevision);
-    print("revision ($revision) synced with local service");
-    final storedRevision = await revisionBox.get(_revisionKey);
-    print("Local service revision $storedRevision");
     collection.close();
     _lastKnownRevision = revision;
-
-    // return storedRevision;
   }
 
   @override
@@ -87,7 +81,6 @@ class HiveService implements LocalService<Todo> {
 
     final todosBox = await collection.openBox(_todoBoxName);
 
-    // await todosBox.put(value['id'], value);
     final response = await todosBox.get(value.id!);
     collection.close();
     lastKnownRevision++;
