@@ -56,7 +56,6 @@ class TodoTile extends StatelessWidget {
           title: Row(
             children: [
               LeadingIconByImportance(importance: todo.importance),
-              const SizedBox(width: 6),
               Expanded(
                 child: Text(
                   todo.text,
@@ -91,15 +90,24 @@ class LeadingIconByImportance extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Widget icon;
     switch (importance) {
       case Importance.important:
-        return SvgPicture.asset(importantSvg);
+        icon = SvgPicture.asset(importantSvg);
+        break;
       case Importance.basic:
-        return SvgPicture.asset(basicImportanceSvg);
+        icon = SvgPicture.asset(basicImportanceSvg);
+        break;
       case Importance.low:
       default:
         return const SizedBox();
     }
+    return Row(
+      children: [
+        icon,
+        const SizedBox(width: 6),
+      ],
+    );
   }
 }
 
