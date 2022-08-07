@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:todo/src/models/todo.dart';
-import 'package:todo/src/services/todo_service.dart';
+import 'package:todo/src/services/local_service/local_service.dart';
+import 'package:todo/src/services/remote_service/todo_service.dart';
 
 abstract class TodoListBaseController extends ChangeNotifier {
   TodoService get service;
+
+  LocalService<Todo> get localService;
 
   List<Todo> todos = [];
 
@@ -28,4 +31,10 @@ abstract class TodoListBaseController extends ChangeNotifier {
   Future<void> getTodos();
 
   void onTodoSelected(int index);
+
+  void createTodo(Todo todo);
+
+  void updateTodo(Todo todo);
+
+  void createTodoFromText(String text);
 }

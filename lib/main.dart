@@ -5,13 +5,14 @@ import 'package:provider/provider.dart';
 import 'package:todo/src/misc/dotenv.dart';
 import 'package:todo/src/misc/theme/theme.dart';
 import 'package:todo/src/services/firebase.dart';
-import 'package:todo/src/services/mock_todo_service.dart';
+import 'package:todo/src/services/local_service/hive.dart';
 import 'package:todo/src/services/navigation.dart';
 import 'package:todo/src/services/scaffold_messenger_serivce.dart';
 
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'src/services/logging.dart' as logger;
+import 'package:todo/src/services/remote_service/todo_service.dart';
 
 import 'src/view/list_todo/todo_list_base_controller.dart';
 import 'src/view/list_todo/todo_list_controller.dart';
@@ -20,11 +21,10 @@ import 'src/view/list_todo/todo_list_screen.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   logger.initLogger();
- 
+
   if (Platform.isAndroid || Platform.isIOS) {
     await FirebaseService.init();
   }
-
 
   await Dotenv().init();
   runApp(const MyApp());
@@ -67,7 +67,7 @@ class MyApp extends StatelessWidget {
           Locale('ru', 'RU'),
         ],
         home: ChangeNotifierProvider<TodoListBaseController>(
-          create: (_) => TodoListController(MockTodoService()),
+          create: (_) => TodoListController(TodoService(), HiveService()),
           child: const TodoListScreen(),
         ));
   }
