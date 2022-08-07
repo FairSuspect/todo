@@ -9,6 +9,7 @@
     "newTask": "Новое",
     "importanceNone": "Нет",
     "importanceBasic": "Низкий",
-    "importanceHigh": "Высокий"
+    "importanceHigh": "Высокий",
+    "delete": "Удалить"
 
 }
