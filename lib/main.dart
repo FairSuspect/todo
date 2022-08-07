@@ -5,13 +5,16 @@ import 'package:provider/provider.dart';
 import 'package:todo/src/misc/dotenv.dart';
 import 'package:todo/src/misc/theme/theme.dart';
 import 'package:todo/src/services/firebase.dart';
+import 'package:todo/src/services/mock_todo_service.dart';
 import 'package:todo/src/services/navigation.dart';
 import 'package:todo/src/services/scaffold_messenger_serivce.dart';
-import 'package:todo/src/services/todo_service.dart';
-import 'package:todo/src/view/todo_list_controller.dart';
-import 'package:todo/src/view/todo_list_screen.dart';
+
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+import 'src/view/list_todo/todo_list_base_controller.dart';
+import 'src/view/list_todo/todo_list_controller.dart';
+import 'src/view/list_todo/todo_list_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -59,8 +62,8 @@ class MyApp extends StatelessWidget {
           Locale('en', ''),
           Locale('ru', 'RU'),
         ],
-        home: ChangeNotifierProvider(
-          create: (_) => TodoListController(TodoService()),
+        home: ChangeNotifierProvider<TodoListBaseController>(
+          create: (_) => TodoListController(MockTodoService()),
           child: const TodoListScreen(),
         ));
   }
