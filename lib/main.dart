@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:todo/src/misc/dotenv.dart';
 import 'package:todo/src/misc/theme/theme.dart';
 import 'package:todo/src/services/firebase.dart';
+import 'package:todo/src/services/local_service/hive.dart';
 import 'package:todo/src/services/navigation.dart';
 import 'package:todo/src/services/scaffold_messenger_serivce.dart';
 
@@ -63,7 +64,7 @@ class MyApp extends StatelessWidget {
           Locale('ru', 'RU'),
         ],
         home: ChangeNotifierProvider<TodoListBaseController>(
-          create: (_) => TodoListController(TodoService()),
+          create: (_) => TodoListController(TodoService(), HiveService()),
           child: const TodoListScreen(),
         ));
   }

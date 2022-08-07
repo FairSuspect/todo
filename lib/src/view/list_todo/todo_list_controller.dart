@@ -1,21 +1,26 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:todo/src/models/todo.dart';
+import 'package:todo/src/services/local_service/abstract_local_service.dart';
 import 'package:todo/src/services/navigation.dart';
-import 'package:todo/src/services/todo_service.dart';
+import 'package:todo/src/services/remote_service/remote_service.dart';
 import 'package:todo/src/view/create_todo/create_todo_controller.dart';
+import 'package:uuid/uuid.dart';
 
 import '../create_todo/create_todo_screen.dart';
 import 'todo_list_base_controller.dart';
 
 class TodoListController extends ChangeNotifier
     implements TodoListBaseController {
-  TodoListController(this.service) {
+  TodoListController(this.service, this.localService) {
     getTodos();
   }
 
   @override
   final TodoService service;
+  @override
+  final LocalService<Todo> localService;
 
   @override
   List<Todo> todos = [];
