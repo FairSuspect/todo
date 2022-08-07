@@ -17,7 +17,7 @@ class TodoService {
   Future<Todo> getItemById(String id) async {
     final response = await Api().dio.get(ApiPath.getById(id));
 
-    return Todo.fromJson(response.data);
+    return Todo.fromJson(response.data['element']);
   }
 
   Future<List<Todo>> getItemList() async {
@@ -60,7 +60,7 @@ class TodoService {
     }
     lastKnownRevision = response.data['revision'] ?? lastKnownRevision;
 
-    return Todo.fromJson(response.data);
+    return Todo.fromJson(response.data['element']);
   }
 
   Future<Todo> updateTodo(Todo todo) async {
@@ -85,7 +85,7 @@ class TodoService {
     }
 
     lastKnownRevision = response.data['revision'] ?? lastKnownRevision;
-    return Todo.fromJson(response.data);
+    return Todo.fromJson(response.data['element']);
   }
 
   Future<Todo> deleteTodo(String id) async {
@@ -94,7 +94,7 @@ class TodoService {
           options: _revisionHeadersOptions,
         );
     lastKnownRevision = response.data['revision'] ?? lastKnownRevision;
-    return Todo.fromJson(response.data);
+    return Todo.fromJson(response.data['element']);
   }
 
   Map assembleRequest(Todo model, {int? revision}) {

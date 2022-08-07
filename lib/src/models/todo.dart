@@ -7,9 +7,10 @@ import 'package:hive/hive.dart';
 part 'todo.freezed.dart';
 part 'todo.g.dart';
 
-@Freezed()
+@freezed
 class Todo with _$Todo {
   @HiveType(typeId: 0, adapterName: "TodoAdapter")
+  @JsonKey(name: "element")
   const factory Todo({
     @HiveField(0) String? id,
     @HiveField(1) required String text,
