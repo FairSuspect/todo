@@ -11,9 +11,11 @@ import 'package:todo/src/view/todo_list_controller.dart';
 import 'package:todo/src/view/todo_list_screen.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'src/services/logging.dart' as logger;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  logger.initLogger();
   if (Platform.isAndroid || Platform.isIOS) await FirebaseService.init();
 
   await Dotenv().init();
