@@ -24,7 +24,9 @@ class TodoTile extends StatelessWidget {
     final theme = Theme.of(context);
     final colors = theme.extension<CustomColors>()!;
     final doneStyle = TextStyle(
-        decoration: TextDecoration.lineThrough, color: theme.disabledColor);
+      decoration: TextDecoration.lineThrough,
+      color: theme.colorScheme.onTertiary,
+    );
 
     return Dismissible(
       key: key!,
@@ -45,6 +47,7 @@ class TodoTile extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 12.0),
         child: ListTile(
           contentPadding: EdgeInsets.zero,
+          visualDensity: VisualDensity.comfortable,
           leading: Checkbox(
             fillColor: todo.importance == Importance.important && !todo.done
                 ? MaterialStateProperty.resolveWith((states) => colors.red)
