@@ -5,6 +5,10 @@
     "save": "Сохранить",
     "whatToDo": "Что надо сделать...",
     "makeBy": "Сделать до",
-    "importance": "Важность"
+    "importance": "Важность",
+    "newTask": "Новое",
+    "importanceNone": "Нет",
+    "importanceBasic": "Низкий",
+    "importanceHigh": "Высокий"
 
 }

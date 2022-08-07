@@ -5,5 +5,9 @@
     "save": "Save",
     "whatToDo": "What need to do...",
     "makeBy": "Make by",
-    "importance": "Importance"
+    "importance": "Importance",
+    "newTask": "New",
+    "importanceNone": "None",
+    "importanceBasic": "Basic",
+    "importanceHigh": "High"
 }
