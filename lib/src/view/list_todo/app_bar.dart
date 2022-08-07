@@ -63,7 +63,7 @@ class AppBarDelegate extends SliverPersistentHeaderDelegate {
                 child: Opacity(
                   opacity: lerpDouble(1, 0.0, ratio) ?? 0,
                   child: Text("$subtitle — ${controller.completedCount}",
-                      style: theme.textTheme.titleMedium
+                      style: theme.textTheme.bodyMedium
                           ?.copyWith(color: theme.colorScheme.onTertiary)),
                 ),
               );
