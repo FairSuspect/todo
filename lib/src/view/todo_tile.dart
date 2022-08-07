@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:intl/intl.dart';
 import 'package:todo/src/misc/theme/custom_colors.dart';
 import 'package:todo/src/models/todo.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class TodoTile extends StatelessWidget {
   const TodoTile(
@@ -16,8 +18,6 @@ class TodoTile extends StatelessWidget {
   final VoidCallback? onDelete;
   final GestureTapCallback? onTap;
 
-  String get deadlineLabel =>
-      "${deadline!.day}.${deadline!.month}.${deadline!.year}";
   DateTime? get deadline => todo.deadline;
   @override
   Widget build(BuildContext context) {
@@ -67,7 +67,10 @@ class TodoTile extends StatelessWidget {
               ),
             ],
           ),
-          subtitle: deadline != null ? Text(deadlineLabel) : null,
+          subtitle: deadline != null
+              ? Text(DateFormat.yMMMMd(AppLocalizations.of(context).localeName)
+                  .format(deadline!))
+              : null,
           trailing: const Icon(Icons.info_outline),
           onTap: onTap,
         ),

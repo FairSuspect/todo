@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:todo/src/misc/extensions/todo.dart';
 import 'package:todo/src/misc/theme/extensions.dart';
@@ -139,10 +140,14 @@ class DeadlineSwitch extends StatelessWidget {
       return SwitchListTile.adaptive(
         contentPadding: EdgeInsets.zero,
         title: Text(AppLocalizations.of(context).makeBy),
+        visualDensity: VisualDensity.standard,
         subtitle: controller.todo?.deadline != null
             ? InkWell(
                 child: Text(
-                  controller.todo!.deadline!.toString(),
+                  DateFormat.yMMMMd(AppLocalizations.of(context).localeName)
+                      .format(controller.todo!.deadline!),
+                  style: TextStyle(
+                      color: Theme.of(context).extension<CustomColors>()?.blue),
                 ),
                 onTap: () {
                   controller.pickDeadline(context);
