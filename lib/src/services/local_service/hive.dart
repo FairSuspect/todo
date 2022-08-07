@@ -7,9 +7,10 @@ class HiveService implements LocalService<Todo> {
   static const String _collectionName = "TodoHive";
   static const String _revisionBoxName = "Revision";
   static const String _revisionKey = "revision";
+  static const String _hivePath = './';
   HiveService() {
     Hive
-      ..init('./')
+      ..init(_hivePath)
       ..registerAdapter(TodoAdapter())
       ..registerAdapter(ImportanceAdapter());
     getRevision().then((value) {
@@ -30,8 +31,9 @@ class HiveService implements LocalService<Todo> {
 
   @override
   Future<void> storeRevision(int revision) async {
-    final collection =
-        await BoxCollection.open(_todoBoxName, {_revisionBoxName}, path: './');
+    final collection = await BoxCollection.open(
+        _todoBoxName, {_revisionBoxName},
+        path: _hivePath);
     final revisionBox = await collection.openBox<int>(_revisionBoxName);
     await revisionBox.put(_revisionKey, lastKnownRevision);
     print("revision ($revision) synced with local service");
@@ -45,8 +47,9 @@ class HiveService implements LocalService<Todo> {
 
   @override
   Future<int?> getRevision() async {
-    final collection =
-        await BoxCollection.open(_todoBoxName, {_revisionBoxName}, path: './');
+    final collection = await BoxCollection.open(
+        _todoBoxName, {_revisionBoxName},
+        path: _hivePath);
     final revisionBox = await collection.openBox<int>(_revisionBoxName);
 
     final int? storedRevision = await revisionBox.get(_revisionKey);
@@ -59,7 +62,7 @@ class HiveService implements LocalService<Todo> {
     final collection = await BoxCollection.open(
       _collectionName,
       {_todoBoxName},
-      path: './',
+      path: _hivePath,
     );
 
     final todosBox = await collection.openBox<Todo>(_todoBoxName);
@@ -79,7 +82,7 @@ class HiveService implements LocalService<Todo> {
     final collection = await BoxCollection.open(
       _collectionName,
       {_todoBoxName},
-      path: './',
+      path: _hivePath,
     );
 
     final todosBox = await collection.openBox(_todoBoxName);
@@ -97,7 +100,7 @@ class HiveService implements LocalService<Todo> {
     final collection = await BoxCollection.open(
       _collectionName,
       {_todoBoxName},
-      path: './',
+      path: _hivePath,
     );
 
     final todosBox = await collection.openBox<Todo>(_todoBoxName);
@@ -115,7 +118,7 @@ class HiveService implements LocalService<Todo> {
     final collection = await BoxCollection.open(
       _collectionName,
       {_todoBoxName},
-      path: './',
+      path: _hivePath,
     );
 
     final todosBox = await collection.openBox<Todo>(_todoBoxName);
@@ -135,7 +138,7 @@ class HiveService implements LocalService<Todo> {
     final collection = await BoxCollection.open(
       _collectionName,
       {_todoBoxName},
-      path: './',
+      path: _hivePath,
     );
 
     final todosBox = await collection.openBox<Todo>(_todoBoxName);
