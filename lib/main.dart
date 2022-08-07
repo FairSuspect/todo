@@ -3,20 +3,28 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:todo/src/misc/dotenv.dart';
+import 'package:todo/src/misc/theme/theme.dart';
 import 'package:todo/src/services/firebase.dart';
+import 'package:todo/src/services/mock_todo_service.dart';
 import 'package:todo/src/services/navigation.dart';
 import 'package:todo/src/services/scaffold_messenger_serivce.dart';
-import 'package:todo/src/services/todo_service.dart';
-import 'package:todo/src/view/todo_list_controller.dart';
-import 'package:todo/src/view/todo_list_screen.dart';
+
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'src/services/logging.dart' as logger;
 
+import 'src/view/list_todo/todo_list_base_controller.dart';
+import 'src/view/list_todo/todo_list_controller.dart';
+import 'src/view/list_todo/todo_list_screen.dart';
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   logger.initLogger();
-  if (Platform.isAndroid || Platform.isIOS) await FirebaseService.init();
+ 
+  if (Platform.isAndroid || Platform.isIOS) {
+    await FirebaseService.init();
+  }
+
 
   await Dotenv().init();
   runApp(const MyApp());
@@ -28,15 +36,26 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    late final Color? importanceColor;
+    if (Platform.isAndroid || Platform.isIOS) {
+      importanceColor = FirebaseService.fetchImportanceColor();
+    } else {
+      importanceColor = null;
+    }
     return MaterialApp(
-        title: 'Flutter Demo',
         navigatorKey: Navigation().key,
         scaffoldMessengerKey: ScaffoldMessengerService().scaffoldMessengerKey,
-        theme: ThemeData(checkboxTheme: const CheckboxThemeData()
-            // colorScheme: ColorScheme.fromSeed(
-            //     seedColor: Color(int.parse(
-            //         FirebaseRemoteConfig.instance.getString("importance_color")))),
-            ),
+        // colorScheme: ColorScheme.fromSeed(
+        //     seedColor: Color(int.parse(
+        //         FirebaseRemoteConfig.instance.getString("importance_color")))),
+        theme: lightTheme.copyWith(extensions: [
+          customColorsLight.copyWith(red: importanceColor),
+          layoutColorsLight
+        ]),
+        darkTheme: darkTheme,
+        themeMode: ThemeMode.light,
+        onGenerateTitle: (context) => AppLocalizations.of(context).title,
+        locale: Locale("ru", "RU"),
         localizationsDelegates: const [
           AppLocalizations.delegate,
           GlobalMaterialLocalizations.delegate,
@@ -47,8 +66,8 @@ class MyApp extends StatelessWidget {
           Locale('en', ''),
           Locale('ru', 'RU'),
         ],
-        home: ChangeNotifierProvider(
-          create: (_) => TodoListController(TodoService()),
+        home: ChangeNotifierProvider<TodoListBaseController>(
+          create: (_) => TodoListController(MockTodoService()),
           child: const TodoListScreen(),
         ));
   }

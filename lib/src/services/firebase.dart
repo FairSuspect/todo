@@ -1,8 +1,12 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
+import 'package:flutter/rendering.dart';
 import 'package:todo/firebase_options.dart';
+import 'package:todo/src/misc/theme/theme.dart';
 
 class FirebaseService {
+  static const String _importanceColorKey = "importance_color";
+
   static Future<void> init() async {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
@@ -11,11 +15,20 @@ class FirebaseService {
     final remoteConfig = FirebaseRemoteConfig.instance;
     await remoteConfig.setConfigSettings(RemoteConfigSettings(
       fetchTimeout: const Duration(minutes: 1),
-      minimumFetchInterval: const Duration(hours: 1),
+      minimumFetchInterval: const Duration(microseconds: 1),
     ));
-    await remoteConfig.setDefaults(const {
-      "importance_color": "0xFFFF3B30",
+    final String defaultImportanceValue =
+        customColorsLight.red.value.toString();
+    await remoteConfig.setDefaults({
+      _importanceColorKey: defaultImportanceValue,
     });
     await remoteConfig.fetchAndActivate();
+  }
+
+  static fetchImportanceColor() {
+    final value =
+        int.parse(FirebaseRemoteConfig.instance.getString(_importanceColorKey));
+    print(FirebaseRemoteConfig.instance.getString(_importanceColorKey));
+    return Color(value);
   }
 }
