@@ -12,11 +12,12 @@ final darkTheme = ThemeData(
         TextStyle(fontSize: 32, height: 38 / 32, fontWeight: FontWeight.w500),
     titleMedium:
         TextStyle(fontSize: 20, height: 32 / 20, fontWeight: FontWeight.w500),
-    bodyMedium:
-        TextStyle(fontSize: 16, height: 20 / 16, fontWeight: FontWeight.w400),
+    bodyMedium: _defaultTextTheme,
     titleSmall:
         TextStyle(fontSize: 14, height: 20 / 14, fontWeight: FontWeight.w400),
   ),
+  inputDecorationTheme:
+      const InputDecorationTheme(hintStyle: _defaultTextTheme),
   textButtonTheme: TextButtonThemeData(
     style: TextButton.styleFrom(
       primary: _blue,
@@ -41,21 +42,10 @@ final darkTheme = ThemeData(
   floatingActionButtonTheme: const FloatingActionButtonThemeData(
     backgroundColor: _blue,
   ),
-  extensions: [
-    CustomColors(
-      red: _red,
-      green: _green,
-      blue: _blue,
-      gray: _gray,
-      grayLight: _grayLight,
-      white: _white,
-    ),
-    LayoutColors(
-      seperatorColor: _separator,
-      overlayColor: _overlay,
-    ),
-  ],
 );
+
+const _defaultTextTheme =
+    TextStyle(fontSize: 16, height: 20 / 16, fontWeight: FontWeight.w400);
 
 /// Support [Light] / Separator
 const Color _separator = Color(0x330FFFFF);

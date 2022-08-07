@@ -9,5 +9,6 @@
     "newTask": "New",
     "importanceNone": "None",
     "importanceBasic": "Basic",
-    "importanceHigh": "High"
+    "importanceHigh": "High",
+    "delete": "Delete"
 }

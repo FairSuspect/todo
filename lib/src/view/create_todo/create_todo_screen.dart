@@ -67,9 +67,11 @@ class _TextField extends StatelessWidget {
     final tr = AppLocalizations.of(context);
     final controller =
         Provider.of<CreateTodoController>(context, listen: false);
+    final theme = Theme.of(context);
     return Card(
       margin: EdgeInsets.zero,
       child: TextFormField(
+        style: theme.textTheme.bodyMedium,
         initialValue: controller.todo?.text,
         minLines: 4,
         maxLines: 100,
@@ -106,7 +108,10 @@ class ImportanceSelector extends StatelessWidget {
                     ? ImportantDropDownChild(
                         text: importance.translateImportance(context),
                       )
-                    : Text(importance.translateImportance(context)),
+                    : Text(
+                        importance.translateImportance(context),
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
               );
             }).toList(),
             onChanged: controller.setImportance,
@@ -123,9 +128,11 @@ class ImportantDropDownChild extends StatelessWidget {
   final String text;
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Text(
       "!! $text",
-      style: TextStyle(color: Theme.of(context).extension<CustomColors>()?.red),
+      style: theme.textTheme.bodyMedium
+          ?.copyWith(color: Theme.of(context).extension<CustomColors>()?.red),
     );
   }
 }
@@ -135,19 +142,21 @@ class DeadlineSwitch extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Consumer<CreateTodoController>(
         builder: (context, controller, child) {
       return SwitchListTile.adaptive(
         contentPadding: EdgeInsets.zero,
-        title: Text(AppLocalizations.of(context).makeBy),
+        title: Text(AppLocalizations.of(context).makeBy,
+            style: theme.textTheme.bodyMedium),
         visualDensity: VisualDensity.standard,
         subtitle: controller.todo?.deadline != null
             ? InkWell(
                 child: Text(
                   DateFormat.yMMMMd(AppLocalizations.of(context).localeName)
                       .format(controller.todo!.deadline!),
-                  style: TextStyle(
-                      color: Theme.of(context).extension<CustomColors>()?.blue),
+                  style: theme.textTheme.titleSmall
+                      ?.copyWith(color: theme.extension<CustomColors>()?.blue),
                 ),
                 onTap: () {
                   controller.pickDeadline(context);
@@ -169,13 +178,14 @@ class DeleteRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final redColor = Theme.of(context).errorColor;
+    final redColor = theme.errorColor;
     final color = onTap != null ? redColor : theme.disabledColor;
     return ListTile(
       textColor: color,
       iconColor: color,
       leading: const Icon(Icons.delete),
-      title: const Text("Удалить"),
+      title: Text(AppLocalizations.of(context).delete,
+          style: theme.textTheme.bodyMedium?.copyWith(color: redColor)),
       onTap: onTap,
     );
   }
