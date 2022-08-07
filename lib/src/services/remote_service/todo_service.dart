@@ -32,7 +32,7 @@ class TodoService {
     final response = await Api().dio.patch(
           ApiPath.patchList,
           data: {"list": data},
-          options: Options(headers: {_revisionHeader: lastKnownRevision}),
+          options: _revisionHeadersOptions,
         );
     return Todo.listFromJson(response.data['list']);
   }
@@ -44,7 +44,7 @@ class TodoService {
       response = await Api().dio.post(
             ApiPath.create,
             data: {"element": todoJson},
-            options: Options(headers: {_revisionHeader: lastKnownRevision}),
+            options: _revisionHeadersOptions,
           );
     } on DioError catch (e) {
       if (e.response?.statusCode == 400) {
@@ -52,7 +52,7 @@ class TodoService {
         response = await Api().dio.post(
               ApiPath.create,
               data: {"element": todoJson},
-              options: Options(headers: {_revisionHeader: lastKnownRevision}),
+              options: _revisionHeadersOptions,
             );
       } else {
         rethrow;
@@ -69,7 +69,7 @@ class TodoService {
       response = await Api().dio.put(
             ApiPath.put(todo.id!),
             data: {"element": todo.toJson()},
-            options: Options(headers: {_revisionHeader: lastKnownRevision}),
+            options: _revisionHeadersOptions,
           );
     } on DioError catch (e) {
       if (e.response?.statusCode == 400) {
@@ -77,7 +77,7 @@ class TodoService {
         response = await Api().dio.put(
               ApiPath.put(todo.id!),
               data: {"element": todo.toJson()},
-              options: Options(headers: {_revisionHeader: lastKnownRevision}),
+              options: _revisionHeadersOptions,
             );
       } else {
         rethrow;
@@ -91,7 +91,7 @@ class TodoService {
   Future<Todo> deleteTodo(String id) async {
     final response = await Api().dio.delete(
           ApiPath.delete(id),
-          options: Options(headers: {_revisionHeader: lastKnownRevision}),
+          options: _revisionHeadersOptions,
         );
     lastKnownRevision = response.data['revision'] ?? lastKnownRevision;
     return Todo.fromJson(response.data);
@@ -109,4 +109,10 @@ class TodoService {
 
     lastKnownRevision = response.data['revision'];
   }
+
+  Options get _revisionHeadersOptions => Options(
+        headers: {
+          _revisionHeader: lastKnownRevision,
+        },
+      );
 }
