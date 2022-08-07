@@ -56,7 +56,10 @@ class TodoListController extends ChangeNotifier
                       todo: selectedTodo,
                     ),
                 child: const CreateTodoScreen())));
-    if (newTodo == null) return;
+    if (newTodo == null) {
+      selectedIndex = null;
+      return;
+    }
     if (selectedTodo == null) {
       createTodo(newTodo);
       return;
@@ -68,23 +71,43 @@ class TodoListController extends ChangeNotifier
   }
 
   @override
-  void onChecked(int index, bool? value) {
+  Future<void> onChecked(int index, bool? value) async {
     todos[index] = todos[index].copyWith(done: value ?? false);
     notifyListeners();
-    service.updateTodo(todos[index]);
+    localService.updateValue(todos[index]);
+    await service.updateTodo(todos[index]);
+
+    await onRevisionUpdated(service.lastKnownRevision);
   }
 
   @override
-  void onDelete(int index) {
+  Future<void> onDelete(int index) async {
     final deletedId = todos.removeAt(index).id;
     notifyListeners();
-    service.deleteTodo(deletedId!);
+    localService.deleteValue(deletedId!);
+    await service.deleteTodo(deletedId);
+
+    await onRevisionUpdated(service.lastKnownRevision);
   }
 
   @override
   Future<void> getTodos() async {
-    todos = await service.getItemList();
-    notifyListeners();
+    try {
+      final remoteTodos = await service.getItemList();
+      final localTodos = await localService.getAll();
+      if (service.lastKnownRevision > localService.lastKnownRevision) {
+        todos = remoteTodos;
+        localService.putList(remoteTodos);
+        onRevisionUpdated(service.lastKnownRevision);
+      } else {
+        todos = localTodos;
+        service.patchList(todos);
+      }
+    } on DioError {
+      todos = await localService.getAll();
+    } finally {
+      notifyListeners();
+    }
   }
 
   @override
@@ -100,16 +123,30 @@ class TodoListController extends ChangeNotifier
   }
 
   @override
-  void createTodo(Todo todo) {
+  Future<void> createTodo(Todo todo) async {
+    final dateCreated = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+    todo = todo.copyWith(
+        id: const Uuid().v4(),
+        lastUpdatedBy: "debug",
+        createdAt: dateCreated,
+        changedAt: dateCreated);
     todos.add(todo);
-    service.createTodo(todo);
     notifyListeners();
+    localService.createValue(todo);
+    await service.createTodo(todo);
+    await onRevisionUpdated(service.lastKnownRevision);
   }
 
   @override
-  void updateTodo(Todo todo) {
+  Future<void> updateTodo(Todo todo) async {
     todos[selectedIndex!] = todo;
     notifyListeners();
-    service.updateTodo(selectedTodo!);
+    localService.updateValue(selectedTodo!);
+    await service.updateTodo(selectedTodo!);
+    await onRevisionUpdated(service.lastKnownRevision);
+  }
+
+  Future<void> onRevisionUpdated(int revision) async {
+    await localService.storeRevision(revision);
   }
 }
