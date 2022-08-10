@@ -21,4 +21,6 @@ abstract class CreateTodoBaseController extends ChangeNotifier {
   void save();
 
   bool get canBeDeleted;
+
+  void delete();
 }

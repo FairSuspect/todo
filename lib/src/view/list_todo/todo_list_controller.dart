@@ -64,6 +64,11 @@ class TodoListController extends ChangeNotifier
       createTodo(newTodo);
       return;
     } else {
+      if (newTodo.text == '') {
+        final index = todos.indexWhere((element) => element.id == newTodo.id);
+        onDelete(index);
+        return;
+      }
       updateTodo(newTodo);
       selectedIndex = null;
       return;

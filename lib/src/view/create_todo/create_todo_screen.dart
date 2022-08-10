@@ -49,7 +49,8 @@ class CreateTodoScreen extends StatelessWidget {
             DeleteRow(
               onTap: Provider.of<CreateTodoController>(context, listen: false)
                       .canBeDeleted
-                  ? () {}
+                  ? Provider.of<CreateTodoController>(context, listen: false)
+                      .delete
                   : null,
             ),
           ],

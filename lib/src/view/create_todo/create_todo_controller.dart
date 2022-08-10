@@ -69,4 +69,9 @@ class CreateTodoController extends ChangeNotifier
 
   @override
   bool get canBeDeleted => todo?.id != null;
+
+  @override
+  void delete() {
+    Navigation().key.currentState!.pop(todo!.copyWith(text: ''));
+  }
 }
