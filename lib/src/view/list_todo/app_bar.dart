@@ -1,7 +1,8 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:todo/src/managers/todo_list_manager.dart';
 import 'package:todo/src/view/list_todo/todo_list_base_controller.dart';
 
 class AppBarDelegate extends SliverPersistentHeaderDelegate {
@@ -55,33 +56,34 @@ class AppBarDelegate extends SliverPersistentHeaderDelegate {
                           lerpDouble(minFontSize, maxFontSize, 1 - ratio))),
             ),
             // Текст "Выполнено - {count}"
-            Consumer<TodoListBaseController>(
-                builder: (context, controller, child) {
+            Consumer(builder: (context, ref, child) {
+              final todos = ref.watch(todoListStateProvider);
               final theme = Theme.of(context);
               return Positioned(
                 left: leftShift,
                 bottom: 18,
                 child: Opacity(
                   opacity: lerpDouble(1, 0.0, ratio) ?? 0,
-                  child: Text("$subtitle — ${controller.completedCount}",
+                  child: Text(
+                      "$subtitle — ${todos.where((element) => element.done).length}",
                       style: theme.textTheme.bodyMedium
                           ?.copyWith(color: theme.colorScheme.onTertiary)),
                 ),
               );
             }),
             // Переключатель фильтра задач
-            Consumer<TodoListBaseController>(
-                builder: (context, controller, child) {
+            Consumer(builder: (context, ref, child) {
+              final isFilterOn = ref.watch(filterProvider);
               return Positioned(
                 right: 0,
                 bottom: 0,
                 child: IconButton(
                   padding:
                       const EdgeInsets.symmetric(vertical: 18, horizontal: 22),
-                  icon: controller.showDone
+                  icon: isFilterOn
                       ? const Icon(Icons.visibility_off)
                       : const Icon(Icons.visibility),
-                  onPressed: controller.checkVisibility,
+                  onPressed: ref.read(filterManagerProvider).onChecked,
                 ),
               );
             }),

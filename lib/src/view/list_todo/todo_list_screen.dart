@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sliver_tools/sliver_tools.dart';
+import 'package:todo/src/managers/todo_list_manager.dart';
 import 'package:todo/src/misc/theme/custom_colors.dart';
 import 'package:todo/src/view/add_todo_tile.dart';
 import 'package:todo/src/view/todo_tile.dart';
 
 import 'app_bar.dart';
-import 'todo_list_base_controller.dart';
 
 class TodoListScreen extends StatelessWidget {
   const TodoListScreen({Key? key}) : super(key: key);
@@ -20,8 +20,9 @@ class TodoListScreen extends StatelessWidget {
       left: false,
       right: false,
       bottom: false,
-      child: Consumer<TodoListBaseController>(
-          builder: (context, controller, child) {
+      child: Consumer(builder: (context, ref, child) {
+        final todos = ref.watch(filteredTodosProvider);
+        final controller = ref.read(todoListManagerProvider);
         return Scaffold(
           body: CustomScrollView(
             slivers: [
@@ -46,25 +47,24 @@ class TodoListScreen extends StatelessWidget {
                       SliverList(
                         delegate: SliverChildBuilderDelegate(
                           (_, index) {
-                            if (index == controller.filteredTodos.length) {
+                            if (index == todos.length) {
                               return AddTodoTile(
                                   onSubmitted: controller.createTodoFromText);
                             }
                             return TodoTile(
-                                key: ValueKey(
-                                    controller.filteredTodos[index].id),
-                                todo: controller.filteredTodos[index],
+                                key: ValueKey(todos[index].id),
+                                todo: todos[index],
                                 onChanged: (value) {
                                   controller.onChecked(index, value);
                                 },
                                 onDelete: () {
-                                  controller.onDelete(index);
+                                  controller.delete(todos[index]);
                                 },
                                 onTap: () {
-                                  controller.onTodoSelected(index);
+                                  controller.onTodoSelected(todos[index]);
                                 });
                           },
-                          childCount: controller.filteredTodos.length + 1,
+                          childCount: todos.length + 1,
                         ),
                       ),
                     ],
@@ -91,7 +91,7 @@ class TodoListScreen extends StatelessWidget {
           //   },
           // ),
           floatingActionButton: FloatingActionButton(
-            onPressed: controller.onPressed,
+            onPressed: controller.onFABPressed,
             child: Icon(
               Icons.add,
               color: theme.extension<CustomColors>()!.white,
