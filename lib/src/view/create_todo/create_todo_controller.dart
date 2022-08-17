@@ -67,6 +67,10 @@ class CreateTodoController extends ChangeNotifier
     Navigation().key.currentState!.pop(todo);
   }
 
-  @override
   bool get canBeDeleted => todo?.id != null;
+
+  @override
+  void setActiveTodo(Todo? todo) {
+    // TODO: implement setActiveTodo
+  }
 }

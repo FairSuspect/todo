@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
+import 'package:todo/src/managers/create_todo_manager.dart';
 import 'package:todo/src/misc/extensions/todo.dart';
 import 'package:todo/src/misc/theme/extensions.dart';
 import 'package:todo/src/misc/validators/text_input_validators.dart';
@@ -19,9 +20,14 @@ class CreateTodoScreen extends StatelessWidget {
       appBar: AppBar(
         leading: const CloseButton(),
         actions: [
-          TextButton(
-              onPressed: Provider.of<CreateTodoController>(context).save,
-              child: Text(tr.save.toUpperCase())),
+          Consumer(
+            builder: (context, ref, child) {
+              return TextButton(
+                  onPressed: ref.read(createTodoManagerProvider).save,
+                  child: child!);
+            },
+            child: Text(tr.save.toUpperCase()),
+          ),
         ],
       ),
       body: SingleChildScrollView(
@@ -31,8 +37,13 @@ class CreateTodoScreen extends StatelessWidget {
             Padding(
               padding:
                   const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-              child: Form(
-                key: Provider.of<CreateTodoController>(context).formKey,
+              child: Consumer(
+                builder: (context, ref, child) {
+                  return Form(
+                    key: ref.read(createTodoManagerProvider).formKey,
+                    child: child!,
+                  );
+                },
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: const [
@@ -46,12 +57,15 @@ class CreateTodoScreen extends StatelessWidget {
               ),
             ),
             const Divider(),
-            DeleteRow(
-              onTap: Provider.of<CreateTodoController>(context, listen: false)
-                      .canBeDeleted
-                  ? () {}
-                  : null,
-            ),
+            Consumer(builder: (context, ref, child) {
+              return DeleteRow(
+                onTap: ref
+                        .read(createTodoStateHolderProvider.notifier)
+                        .canBeDeleted
+                    ? () {}
+                    : null,
+              );
+            }),
           ],
         ),
       ),
@@ -65,24 +79,27 @@ class _TextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tr = AppLocalizations.of(context);
-    final controller =
-        Provider.of<CreateTodoController>(context, listen: false);
+
     final theme = Theme.of(context);
     return Card(
       margin: EdgeInsets.zero,
-      child: TextFormField(
-        style: theme.textTheme.bodyMedium,
-        initialValue: controller.todo?.text,
-        minLines: 4,
-        maxLines: 100,
-        onSaved: controller.onTextSaved,
-        textCapitalization: TextCapitalization.sentences,
-        validator: Validators.isNotEmpty,
-        decoration: InputDecoration(
-            border: InputBorder.none,
-            hintText: tr.whatToDo,
-            contentPadding: const EdgeInsets.all(16.0)),
-      ),
+      child: Consumer(builder: (context, ref, child) {
+        final state = ref.watch(createTodoStateHolderProvider);
+
+        return TextFormField(
+          style: theme.textTheme.bodyMedium,
+          initialValue: state.text,
+          minLines: 4,
+          maxLines: 100,
+          onSaved: ref.read(createTodoManagerProvider).onTextSaved,
+          textCapitalization: TextCapitalization.sentences,
+          validator: Validators.isNotEmpty,
+          decoration: InputDecoration(
+              border: InputBorder.none,
+              hintText: tr.whatToDo,
+              contentPadding: const EdgeInsets.all(16.0)),
+        );
+      }),
     );
   }
 }
@@ -96,11 +113,12 @@ class ImportanceSelector extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(AppLocalizations.of(context).importance),
-        Consumer<CreateTodoController>(builder: (context, controller, child) {
+        Consumer(builder: (context, ref, child) {
+          final todo = ref.watch(createTodoStateHolderProvider);
           return DropdownButton<Importance>(
             underline: const SizedBox.shrink(),
             icon: const SizedBox.shrink(),
-            value: controller.todo?.importance,
+            value: todo.importance,
             items: Importance.values.map((importance) {
               return DropdownMenuItem(
                 value: importance,
@@ -114,7 +132,7 @@ class ImportanceSelector extends StatelessWidget {
                       ),
               );
             }).toList(),
-            onChanged: controller.setImportance,
+            onChanged: ref.read(createTodoManagerProvider).setImportance,
           );
         })
       ],
@@ -143,29 +161,31 @@ class DeadlineSwitch extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Consumer<CreateTodoController>(
-        builder: (context, controller, child) {
+    return Consumer(builder: (context, ref, child) {
+      final todo = ref.watch(createTodoStateHolderProvider);
       return SwitchListTile.adaptive(
         contentPadding: EdgeInsets.zero,
         title: Text(AppLocalizations.of(context).makeBy,
             style: theme.textTheme.bodyMedium),
         visualDensity: VisualDensity.standard,
-        subtitle: controller.todo?.deadline != null
+        subtitle: todo.deadline != null
             ? InkWell(
                 child: Text(
                   DateFormat.yMMMMd(AppLocalizations.of(context).localeName)
-                      .format(controller.todo!.deadline!),
+                      .format(todo.deadline!),
                   style: theme.textTheme.titleSmall
                       ?.copyWith(color: theme.extension<CustomColors>()?.blue),
                 ),
                 onTap: () {
-                  controller.pickDeadline(context);
+                  ref.read(createTodoManagerProvider).pickDeadline(context);
                 },
               )
             : null,
-        value: controller.todo!.deadline != null,
+        value: todo.deadline != null,
         onChanged: (value) {
-          controller.onDeadlineSwitchChanged(context, value);
+          ref
+              .read(createTodoManagerProvider)
+              .onDeadlineSwitchChanged(context, value);
         },
       );
     });
