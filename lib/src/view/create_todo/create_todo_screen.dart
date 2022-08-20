@@ -10,8 +10,8 @@ import 'package:todo/src/models/todo.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class CreateTodoScreen extends StatelessWidget {
-  const CreateTodoScreen({super.key});
-
+  const CreateTodoScreen({super.key, required this.todoId});
+  final String? todoId;
   @override
   Widget build(BuildContext context) {
     final tr = AppLocalizations.of(context);

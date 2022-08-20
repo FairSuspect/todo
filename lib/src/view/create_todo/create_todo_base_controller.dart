@@ -6,8 +6,6 @@ abstract class CreateTodoBaseController {
 
   void setActiveTodo(Todo? todo);
 
-  void setActiveTodo(Todo? todo);
-
   void setImportance(Importance? value);
 
   Future<void> onDeadlineSwitchChanged(BuildContext context, bool value);

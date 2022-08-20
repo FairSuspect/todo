@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:todo/src/managers/repository_manager.dart';
 import 'package:todo/src/repos/todo_repository.dart';
+import 'package:todo/src/routing/deletage.dart';
 import 'package:todo/src/services/local_service/hive.dart';
 import 'package:todo/src/services/navigation.dart';
-import 'package:todo/src/services/remote_service/todo_service.dart';
 import 'package:todo/src/models/todo.dart';
-import 'package:todo/src/view/create_todo/create_todo_screen.dart';
 
 import 'package:todo/src/view/list_todo/todo_list_base_controller.dart';
 
@@ -31,7 +31,7 @@ class TodoListManager implements TodoListBaseController {
   final TodoListStateHolder state;
 
   // /// Состояние фильтра. Если `true`, значит фильтр включён => выполненные задачи скрыты.
-  // /// В противном случае фильтр выключен,
+
   final bool filterState;
 
   /// Репозиторий с данными о задачах
@@ -75,20 +75,29 @@ class TodoListManager implements TodoListBaseController {
 
   @override
   Future<void> onFABPressed() async {
-    final newTodo = await Navigation().key.currentState!.push<Todo?>(
-        MaterialPageRoute(builder: (_) => const CreateTodoScreen()));
-    if (newTodo == null) {
-      selectedTodo = null;
-      return;
-    }
+    final router = (Router.of(Navigation().key.currentContext!).routerDelegate
+        as TodoRouterDelegate);
     if (selectedTodo == null) {
-      createTodo(newTodo);
-      return;
+      router.gotoCreateTodo();
     } else {
-      updateTodo(newTodo);
-      selectedTodo = null;
-      return;
+      router.gotoTodo(selectedTodo!.id);
     }
+    // await Navigation().key.currentState!.push<Todo?>(MaterialPageRoute(
+    //     builder: (_) => CreateTodoScreen(
+    //           todoId: selectedTodo?.id,
+    //         )));
+    // if (newTodo == null) {
+    //   selectedTodo = null;
+    //   return;
+    // }
+    // if (selectedTodo == null) {
+    //   createTodo(newTodo);
+    //   return;
+    // } else {
+    //   updateTodo(newTodo);
+    //   selectedTodo = null;
+    //   return;
+    // }
   }
 
   @override

@@ -6,16 +6,17 @@ import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:todo/src/misc/dotenv.dart';
 import 'package:todo/src/misc/theme/theme.dart';
+import 'package:todo/src/routing/deletage.dart';
+import 'package:todo/src/routing/route_information_provider.dart';
 import 'package:todo/src/services/firebase.dart';
-import 'package:todo/src/services/navigation.dart';
 import 'package:todo/src/services/scaffold_messenger_serivce.dart';
 
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'src/routing/parser.dart';
 import 'src/services/logging.dart' as logger;
 
 import 'src/models/todo.dart';
-import 'src/view/list_todo/todo_list_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,6 +27,7 @@ Future<void> main() async {
   }
 
   final hivePath = (await getApplicationSupportDirectory()).path;
+
   Hive
     ..init(hivePath)
     ..registerAdapter(TodoAdapter())
@@ -38,17 +40,19 @@ Future<void> main() async {
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     late final Color? importanceColor;
+
     if (Platform.isAndroid || Platform.isIOS) {
       importanceColor = FirebaseService.fetchImportanceColor();
     } else {
       importanceColor = null;
     }
-    return MaterialApp(
-      navigatorKey: Navigation().key,
+    return MaterialApp.router(
+      routeInformationParser: TodoRouteParser(),
+      routerDelegate: TodoRouterDelegate(),
+      routeInformationProvider: DebugRouteInformationProvider(),
       scaffoldMessengerKey: ScaffoldMessengerService().scaffoldMessengerKey,
       // colorScheme: ColorScheme.fromSeed(
       //     seedColor: Color(int.parse(
@@ -71,7 +75,10 @@ class MyApp extends StatelessWidget {
         Locale('en', ''),
         Locale('ru', 'RU'),
       ],
-      home: const TodoListScreen(),
+      // home: ChangeNotifierProvider<TodoListBaseController>(
+      //   create: (_) => TodoListController(TodoService(), HiveService()),
+      //   child: const TodoListScreen(),
+      // ),
     );
   }
 }
