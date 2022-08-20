@@ -28,6 +28,17 @@ class TodoTile extends StatelessWidget {
       color: theme.colorScheme.onTertiary,
     ));
 
+    final subtitle = deadline != null
+        ? Text(
+            DateFormat.yMMMMd(AppLocalizations.of(context).localeName)
+                .format(deadline!),
+            style: theme.textTheme.titleSmall!
+                .copyWith(color: theme.colorScheme.onTertiary),
+          )
+        : null;
+    final fillColor = todo.importance == Importance.important && !todo.done
+        ? MaterialStateProperty.resolveWith((states) => colors.red)
+        : null;
     return Dismissible(
       key: key!,
       background: const CheckBackground(),
@@ -50,9 +61,7 @@ class TodoTile extends StatelessWidget {
           contentPadding: EdgeInsets.zero,
           visualDensity: VisualDensity.comfortable,
           leading: Checkbox(
-            fillColor: todo.importance == Importance.important && !todo.done
-                ? MaterialStateProperty.resolveWith((states) => colors.red)
-                : null,
+            fillColor: fillColor,
             value: todo.done,
             onChanged: onChanged,
             activeColor: colors.green,
@@ -70,14 +79,7 @@ class TodoTile extends StatelessWidget {
               ),
             ],
           ),
-          subtitle: deadline != null
-              ? Text(
-                  DateFormat.yMMMMd(AppLocalizations.of(context).localeName)
-                      .format(deadline!),
-                  style: theme.textTheme.titleSmall!
-                      .copyWith(color: theme.colorScheme.onTertiary),
-                )
-              : null,
+          subtitle: subtitle,
           trailing: const Icon(Icons.info_outline),
           onTap: onTap,
         ),
