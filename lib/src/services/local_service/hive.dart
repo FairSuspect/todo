@@ -1,5 +1,4 @@
 import 'package:hive/hive.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:todo/src/models/todo.dart';
 import 'local_service.dart';
 
@@ -8,21 +7,11 @@ class HiveService implements LocalService<Todo> {
   static const String _collectionName = "TodoHive";
   static const String _revisionBoxName = "Revision";
   static const String _revisionKey = "revision";
-  String hivePath = '';
 
-  HiveService() {
-    init();
-  }
+  HiveService();
 
   Future<void> init() async {
-    hivePath = (await Future.microtask(getApplicationSupportDirectory)).path;
-    Hive
-      ..init(hivePath)
-      ..registerAdapter(TodoAdapter())
-      ..registerAdapter(ImportanceAdapter());
-    getRevision().then((value) {
-      _lastKnownRevision = value ?? 0;
-    });
+    _lastKnownRevision = (await getRevision()) ?? 0;
   }
 
   int _lastKnownRevision = 0;
@@ -39,8 +28,9 @@ class HiveService implements LocalService<Todo> {
   @override
   Future<void> storeRevision(int revision) async {
     final collection = await BoxCollection.open(
-        _todoBoxName, {_revisionBoxName},
-        path: hivePath);
+      _todoBoxName,
+      {_revisionBoxName},
+    );
     final revisionBox = await collection.openBox<int>(_revisionBoxName);
     await revisionBox.put(_revisionKey, lastKnownRevision);
     collection.close();
@@ -50,8 +40,9 @@ class HiveService implements LocalService<Todo> {
   @override
   Future<int?> getRevision() async {
     final collection = await BoxCollection.open(
-        _todoBoxName, {_revisionBoxName},
-        path: hivePath);
+      _todoBoxName,
+      {_revisionBoxName},
+    );
     final revisionBox = await collection.openBox<int>(_revisionBoxName);
 
     final int? storedRevision = await revisionBox.get(_revisionKey);
@@ -64,7 +55,6 @@ class HiveService implements LocalService<Todo> {
     final collection = await BoxCollection.open(
       _collectionName,
       {_todoBoxName},
-      path: hivePath,
     );
 
     final todosBox = await collection.openBox<Todo>(_todoBoxName);
@@ -84,7 +74,6 @@ class HiveService implements LocalService<Todo> {
     final collection = await BoxCollection.open(
       _collectionName,
       {_todoBoxName},
-      path: hivePath,
     );
 
     final todosBox = await collection.openBox(_todoBoxName);
@@ -101,7 +90,6 @@ class HiveService implements LocalService<Todo> {
     final collection = await BoxCollection.open(
       _collectionName,
       {_todoBoxName},
-      path: hivePath,
     );
 
     final todosBox = await collection.openBox<Todo>(_todoBoxName);
@@ -119,7 +107,6 @@ class HiveService implements LocalService<Todo> {
     final collection = await BoxCollection.open(
       _collectionName,
       {_todoBoxName},
-      path: hivePath,
     );
 
     final todosBox = await collection.openBox<Todo>(_todoBoxName);
@@ -139,7 +126,6 @@ class HiveService implements LocalService<Todo> {
     final collection = await BoxCollection.open(
       _collectionName,
       {_todoBoxName},
-      path: hivePath,
     );
 
     final todosBox = await collection.openBox<Todo>(_todoBoxName);

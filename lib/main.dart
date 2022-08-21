@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:todo/src/misc/dotenv.dart';
 import 'package:todo/src/misc/theme/theme.dart';
@@ -13,6 +15,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:todo/src/services/remote_service/todo_service.dart';
 
+import 'src/models/todo.dart';
 import 'src/view/list_todo/todo_list_base_controller.dart';
 import 'src/view/list_todo/todo_list_controller.dart';
 import 'src/view/list_todo/todo_list_screen.dart';
@@ -23,6 +26,12 @@ Future<void> main() async {
     await FirebaseService.init();
   }
 
+  final hivePath =
+      (await Future.microtask(getApplicationSupportDirectory)).path;
+  Hive
+    ..init(hivePath)
+    ..registerAdapter(TodoAdapter())
+    ..registerAdapter(ImportanceAdapter());
   await Dotenv().init();
   runApp(const MyApp());
 }
@@ -64,7 +73,10 @@ class MyApp extends StatelessWidget {
           Locale('ru', 'RU'),
         ],
         home: ChangeNotifierProvider<TodoListBaseController>(
-          create: (_) => TodoListController(TodoService(), HiveService()),
+          create: (_) {
+            final localService = HiveService()..init();
+            return TodoListController(TodoService(), localService);
+          },
           child: const TodoListScreen(),
         ));
   }
