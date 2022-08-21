@@ -14,6 +14,8 @@ import 'package:todo/src/services/scaffold_messenger_serivce.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:todo/src/services/remote_service/todo_service.dart';
+import 'src/services/logging.dart' as logger;
+
 
 import 'src/models/todo.dart';
 import 'src/view/list_todo/todo_list_base_controller.dart';
@@ -22,16 +24,18 @@ import 'src/view/list_todo/todo_list_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  logger.initLogger();
+ 
   if (Platform.isAndroid || Platform.isIOS) {
     await FirebaseService.init();
   }
 
-  final hivePath =
-      (await Future.microtask(getApplicationSupportDirectory)).path;
+
   Hive
     ..init(hivePath)
     ..registerAdapter(TodoAdapter())
     ..registerAdapter(ImportanceAdapter());
+
   await Dotenv().init();
   runApp(const MyApp());
 }

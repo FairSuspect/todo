@@ -14,12 +14,13 @@ class AppBarDelegate extends SliverPersistentHeaderDelegate {
   });
 
   /// Левый край, дальше которого текст не будет смещаться
-  static const double _leftLimit = 16.0;
+  static const double _leftEnd = 16.0;
 
   static const double _bottomLimit = 16.0;
 
   static const double _bottomStart = 44.0;
 
+  static const double _leftStart = 60;
   @override
   Widget build(
       BuildContext context, double shrinkOffset, bool overlapsContent) {
@@ -34,7 +35,7 @@ class AppBarDelegate extends SliverPersistentHeaderDelegate {
             : 1;
 
         /// Смешение текста по оси x
-        final double? leftShift = lerpDouble(_leftLimit, 60, 1 - ratio);
+        final double? leftShift = lerpDouble(_leftEnd, _leftStart, 1 - ratio);
 
         /// Смещение текста по оси y
         final double? bottomShift =
@@ -56,13 +57,15 @@ class AppBarDelegate extends SliverPersistentHeaderDelegate {
             // Текст "Выполнено - {count}"
             Consumer<TodoListBaseController>(
                 builder: (context, controller, child) {
+              final theme = Theme.of(context);
               return Positioned(
                 left: leftShift,
                 bottom: 18,
                 child: Opacity(
                   opacity: lerpDouble(1, 0.0, ratio) ?? 0,
                   child: Text("$subtitle — ${controller.completedCount}",
-                      style: Theme.of(context).textTheme.titleMedium),
+                      style: theme.textTheme.bodyMedium
+                          ?.copyWith(color: theme.colorScheme.onTertiary)),
                 ),
               );
             }),
@@ -74,7 +77,7 @@ class AppBarDelegate extends SliverPersistentHeaderDelegate {
                 bottom: 0,
                 child: IconButton(
                   padding:
-                      const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
+                      const EdgeInsets.symmetric(vertical: 18, horizontal: 22),
                   icon: controller.showDone
                       ? const Icon(Icons.visibility_off)
                       : const Icon(Icons.visibility),

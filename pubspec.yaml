@@ -25,6 +25,7 @@ dependencies:
   provider: ^6.0.3
   uuid: ^3.0.6
   intl: ^0.17.0
+  logging: ^1.0.2
   sliver_tools: ^0.2.7
   flutter_svg: ^1.1.2
   hive: ^2.2.3
@@ -35,13 +36,17 @@ dev_dependencies:
     sdk: flutter
   flutter_localizations: 
     sdk: flutter        
-
-
+  flutter_launcher_icons: ^0.10.0
   flutter_lints: ^2.0.0
   build_runner: ^2.2.0
   freezed: ^2.1.0+1
   json_serializable: ^6.3.1
   hive_generator: ^1.1.3
+
+flutter_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/app_icon/icon.jpeg"  
 
 flutter:
   generate: true
@@ -78,3 +83,4 @@ objectbox:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+
