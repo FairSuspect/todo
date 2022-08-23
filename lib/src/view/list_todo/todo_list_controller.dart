@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:todo/src/models/todo.dart';
+import 'package:todo/src/services/firebase/firebase.dart';
 import 'package:todo/src/services/local_service/abstract_local_service.dart';
 import 'package:todo/src/services/navigation.dart';
 import 'package:todo/src/services/remote_service/remote_service.dart';
@@ -49,13 +50,22 @@ class TodoListController extends ChangeNotifier
 
   @override
   Future<void> onPressed() async {
-    final Todo? newTodo =
-        await Navigation().key.currentState!.push<Todo?>(MaterialPageRoute(
-            builder: (_) => ChangeNotifierProvider(
-                create: (context) => CreateTodoController(
-                      todo: selectedTodo,
-                    ),
-                child: const CreateTodoScreen())));
+    final Todo? newTodo = await Navigation()
+        .key
+        .currentState!
+        .push<Todo?>(MaterialPageRoute(builder: (_) {
+      if (selectedTodo != null) {
+        Analytics.logEditTodoScreenView();
+      } else {
+        Analytics.logCreateTodoScreenView();
+      }
+      return ChangeNotifierProvider(
+          create: (context) => CreateTodoController(
+                todo: selectedTodo,
+              ),
+          child: const CreateTodoScreen());
+    }));
+    Analytics.logMainScreenView();
     if (newTodo == null) {
       selectedIndex = null;
       return;
@@ -76,7 +86,9 @@ class TodoListController extends ChangeNotifier
     notifyListeners();
     localService.updateValue(todos[index]);
     await service.updateTodo(todos[index]);
-
+    if (value == true) {
+      Analytics.logTodoCompleted();
+    }
     await onRevisionUpdated(service.lastKnownRevision);
   }
 
@@ -86,6 +98,7 @@ class TodoListController extends ChangeNotifier
     notifyListeners();
     localService.deleteValue(deletedId!);
     await service.deleteTodo(deletedId);
+    Analytics.logTodoDeleted();
 
     await onRevisionUpdated(service.lastKnownRevision);
   }
@@ -132,8 +145,10 @@ class TodoListController extends ChangeNotifier
         changedAt: dateCreated);
     todos.add(todo);
     notifyListeners();
+
     localService.createValue(todo);
     await service.createTodo(todo);
+    Analytics.logTodoCreated();
     await onRevisionUpdated(service.lastKnownRevision);
   }
 

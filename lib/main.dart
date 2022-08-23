@@ -1,12 +1,14 @@
 import 'dart:io';
 
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:logging/logging.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:todo/src/misc/dotenv.dart';
 import 'package:todo/src/misc/theme/theme.dart';
-import 'package:todo/src/services/firebase.dart';
+import 'package:todo/src/services/firebase/firebase.dart';
 import 'package:todo/src/services/local_service/hive.dart';
 import 'package:todo/src/services/navigation.dart';
 import 'package:todo/src/services/scaffold_messenger_serivce.dart';
@@ -77,7 +79,15 @@ class MyApp extends StatelessWidget {
         ],
         home: ChangeNotifierProvider<TodoListBaseController>(
           create: (_) {
-            final localService = HiveService()..init();
+            final localService = HiveService();
+
+            localService.init().onError((error, stackTrace) {
+              Logger("HiveService")
+                  .log(Level.SEVERE, "Failed to init hive service: $error");
+              // FirebaseCrashlytics.instance.recordError(error, stackTrace);
+            });
+            Analytics.logMainScreenView();
+
             return TodoListController(TodoService(), localService);
           },
           child: const TodoListScreen(),
