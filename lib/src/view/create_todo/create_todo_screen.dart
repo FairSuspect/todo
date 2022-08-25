@@ -8,68 +8,69 @@ import 'package:todo/src/misc/validators/text_input_validators.dart';
 import 'package:todo/src/models/todo.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import 'create_todo_controller.dart';
-
 class CreateTodoScreen extends StatelessWidget {
   const CreateTodoScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     final tr = AppLocalizations.of(context);
-    return Scaffold(
-      appBar: AppBar(
-        leading: const CloseButton(),
-        actions: [
-          Consumer(
-            builder: (context, ref, child) {
-              return TextButton(
-                  onPressed: ref.read(createTodoManagerProvider).save,
-                  child: child!);
-            },
-            child: Text(tr.save.toUpperCase()),
-          ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding:
-                  const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-              child: Consumer(
-                builder: (context, ref, child) {
-                  return Form(
-                    key: ref.read(createTodoManagerProvider).formKey,
-                    child: child!,
-                  );
-                },
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
-                    _TextField(),
-                    SizedBox(height: 8),
-                    ImportanceSelector(),
-                    Divider(),
-                    DeadlineSwitch(),
-                  ],
-                ),
-              ),
+    return Consumer(builder: (context, ref, child) {
+      final provider = ref.read(createTodoManagerProvider);
+      return WillPopScope(
+        onWillPop: provider.onWillPop,
+        child: Scaffold(
+          appBar: AppBar(
+            leading: CloseButton(
+              onPressed: () {
+                provider.onWillPop();
+              },
             ),
-            const Divider(),
-            Consumer(builder: (context, ref, child) {
-              return DeleteRow(
-                onTap: ref
-                        .read(createTodoStateHolderProvider.notifier)
-                        .canBeDeleted
-                    ? () {}
-                    : null,
-              );
-            }),
-          ],
+            actions: [
+              TextButton(
+                  onPressed: ref.read(createTodoManagerProvider).save,
+                  child: Text(tr.save.toUpperCase())),
+            ],
+          ),
+          body: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 8.0, horizontal: 16.0),
+                  child: Consumer(
+                    builder: (context, ref, child) {
+                      return Form(
+                        key: ref.read(createTodoManagerProvider).formKey,
+                        child: child!,
+                      );
+                    },
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: const [
+                        _TextField(),
+                        SizedBox(height: 8),
+                        ImportanceSelector(),
+                        Divider(),
+                        DeadlineSwitch(),
+                      ],
+                    ),
+                  ),
+                ),
+                const Divider(),
+                DeleteRow(
+                  onTap: ref
+                          .read(createTodoStateHolderProvider.notifier)
+                          .canBeDeleted
+                      ? () {}
+                      : null,
+                )
+              ],
+            ),
+          ),
         ),
-      ),
-    );
+      );
+    });
   }
 }
 

@@ -10,7 +10,7 @@ import 'package:todo/src/view/create_todo/create_todo_screen.dart';
 import 'package:todo/src/view/list_todo/todo_list_base_controller.dart';
 
 final todoListManagerProvider = Provider((ref) {
-  return TodoListManager(
+  final todoListManager = TodoListManager(
     state: ref.watch(todoListStateProvider.notifier),
     filterState: ref.read(filterProvider),
     repository: TodoRepository(
@@ -18,6 +18,8 @@ final todoListManagerProvider = Provider((ref) {
       localService: HiveService(),
     ),
   );
+  todoListManager.getTodos();
+  return todoListManager;
 });
 
 class TodoListManager implements TodoListBaseController {
@@ -25,9 +27,7 @@ class TodoListManager implements TodoListBaseController {
     required this.state,
     required this.filterState,
     required this.repository,
-  }) {
-    getTodos();
-  }
+  });
   final TodoListStateHolder state;
 
   // /// Состояние фильтра. Если `true`, значит фильтр включён => выполненные задачи скрыты.

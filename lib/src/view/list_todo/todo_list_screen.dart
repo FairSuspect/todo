@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sliver_tools/sliver_tools.dart';
+import 'package:todo/src/managers/create_todo_manager.dart';
 import 'package:todo/src/managers/todo_list_manager.dart';
 import 'package:todo/src/misc/theme/custom_colors.dart';
 import 'package:todo/src/view/add_todo_tile.dart';
@@ -28,11 +29,8 @@ class TodoListScreen extends StatelessWidget {
             slivers: [
               SliverPersistentHeader(
                 pinned: true,
-                // floating: true,
-
                 delegate: AppBarDelegate(
                     title: locale.myTasks, subtitle: locale.done),
-                // delegate: MySliverAppBar(expandedHeight: 200),
               ),
               SliverPadding(
                 padding: const EdgeInsets.all(8),
@@ -64,6 +62,9 @@ class TodoListScreen extends StatelessWidget {
                                 },
                                 onTap: () {
                                   controller.onTodoSelected(todos[id]!);
+                                  ref
+                                      .read(createTodoManagerProvider)
+                                      .setActiveTodo(todos[id]!);
                                 });
                           },
                           childCount: todos.length + 1,
@@ -75,23 +76,6 @@ class TodoListScreen extends StatelessWidget {
               ),
             ],
           ),
-          // ListView.builder(
-          //   itemCount: controller.todos.length,
-          //   itemBuilder: (context, index) {
-          //     return TodoTile(
-          //         key: ValueKey(controller.todos[index].id),
-          //         todo: controller.todos[index],
-          //         onChanged: (value) {
-          //           controller.onChecked(index, value);
-          //         },
-          //         onDelete: () {
-          //           controller.onDelete(index);
-          //         },
-          //         onTap: () {
-          //           controller.onTodoSelected(index);
-          //         });
-          //   },
-          // ),
           floatingActionButton: FloatingActionButton(
             onPressed: controller.onFABPressed,
             child: Icon(

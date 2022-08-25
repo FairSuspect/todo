@@ -15,4 +15,6 @@ abstract class CreateTodoBaseController {
   void onTextSaved(String? value);
 
   void save();
+
+  Future<bool> onWillPop();
 }

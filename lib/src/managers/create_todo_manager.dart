@@ -54,6 +54,13 @@ class CreateTodoManager implements CreateTodoBaseController {
   void pickDeadline(BuildContext context) {
     state.pickDeadline(context);
   }
+
+  @override
+  Future<bool> onWillPop() async {
+    Navigation().key.currentState!.pop();
+    state.setState(Todo.blank());
+    return false;
+  }
 }
 
 final createTodoStateHolderProvider =
@@ -88,6 +95,7 @@ class CreateTodoStateHolder extends StateNotifier<Todo> {
 
   void pop() {
     Navigation().key.currentState!.pop(state);
+    state = Todo.blank();
   }
 
   void setImportance(Importance importance) {
