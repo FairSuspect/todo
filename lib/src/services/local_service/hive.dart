@@ -60,7 +60,7 @@ class HiveService implements LocalService<Todo> {
     final todosBox = await collection.openBox<Todo>(_todoBoxName);
     await todosBox.clear();
     for (var todo in list) {
-      await todosBox.put(todo.id!, todo);
+      await todosBox.put(todo.id, todo);
     }
     final keys = await todosBox.getAllKeys();
     final nullableList = await todosBox.getAll(keys);
@@ -78,7 +78,7 @@ class HiveService implements LocalService<Todo> {
 
     final todosBox = await collection.openBox(_todoBoxName);
 
-    final response = await todosBox.get(value.id!);
+    final response = await todosBox.get(value.id);
     collection.close();
     lastKnownRevision++;
 
@@ -130,8 +130,8 @@ class HiveService implements LocalService<Todo> {
 
     final todosBox = await collection.openBox<Todo>(_todoBoxName);
 
-    await todosBox.put(value.id!, value);
-    final response = await todosBox.get(value.id!);
+    await todosBox.put(value.id, value);
+    final response = await todosBox.get(value.id);
     collection.close();
     lastKnownRevision++;
 

@@ -59,6 +59,6 @@ class MockTodoService extends TodoService {
     final index = _todos.indexWhere((element) => element.id == id);
     // final removedTodo = _todos.elementAt(index);
     // return removedTodo;
-    return Todo(text: '   ');
+    return Todo(text: '   ', id: const Uuid().v4());
   }
 }

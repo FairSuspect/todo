@@ -13,7 +13,7 @@ class Todo with _$Todo {
   @HiveType(typeId: 0, adapterName: "TodoAdapter")
   @JsonKey(name: "element")
   const factory Todo({
-    @HiveField(0) String? id,
+    @HiveField(0) required String id,
     @HiveField(1) required String text,
     @Default(Importance.low) @HiveField(2) Importance importance,
     @JsonKey(fromJson: _dateTimefromJson, toJson: _dateTimeToJson)
@@ -36,7 +36,7 @@ class Todo with _$Todo {
         createdAt: DateTime.now().millisecondsSinceEpoch,
       );
 
-  factory Todo.blank() => const Todo(text: '');
+  factory Todo.blank() => Todo(text: '', id: const Uuid().v4());
 }
 
 DateTime? _dateTimefromJson(int? int) =>

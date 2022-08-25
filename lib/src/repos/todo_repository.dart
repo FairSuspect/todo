@@ -36,7 +36,7 @@ class TodoRepository implements TodoBaseRepository<Todo> {
   Future<void> deleteTodo(String id) async {
     final index = todos.indexWhere((element) => element.id == id);
     final deletedId = todos.removeAt(index).id;
-    localService.deleteValue(deletedId!);
+    localService.deleteValue(deletedId);
     await remoteService.deleteTodo(deletedId);
 
     await onRevisionUpdated(remoteService.lastKnownRevision);
