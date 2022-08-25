@@ -57,7 +57,7 @@ class AppBarDelegate extends SliverPersistentHeaderDelegate {
             ),
             // Текст "Выполнено - {count}"
             Consumer(builder: (context, ref, child) {
-              final todos = ref.watch(filteredTodosProvider);
+              final todos = ref.watch(todoListStateProvider);
               final theme = Theme.of(context);
               return Positioned(
                 left: leftShift,
