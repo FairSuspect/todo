@@ -51,17 +51,19 @@ class TodoListScreen extends StatelessWidget {
                               return AddTodoTile(
                                   onSubmitted: controller.createTodoFromText);
                             }
+                            final id = todos.keys.toList()[index];
+
                             return TodoTile(
-                                key: ValueKey(todos[index].id),
-                                todo: todos[index],
+                                key: ValueKey(todos[id]!.id),
+                                todo: todos[id]!,
                                 onChanged: (value) {
-                                  controller.onChecked(index, value);
+                                  controller.onChecked(todos[id]!.id, value);
                                 },
                                 onDelete: () {
-                                  controller.delete(todos[index]);
+                                  controller.delete(todos[id]!.id);
                                 },
                                 onTap: () {
-                                  controller.onTodoSelected(todos[index]);
+                                  controller.onTodoSelected(todos[id]!);
                                 });
                           },
                           childCount: todos.length + 1,

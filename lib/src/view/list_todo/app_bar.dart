@@ -57,7 +57,7 @@ class AppBarDelegate extends SliverPersistentHeaderDelegate {
             ),
             // Текст "Выполнено - {count}"
             Consumer(builder: (context, ref, child) {
-              final todos = ref.watch(todoListStateProvider);
+              final todos = ref.watch(filteredTodosProvider);
               final theme = Theme.of(context);
               return Positioned(
                 left: leftShift,
@@ -65,7 +65,7 @@ class AppBarDelegate extends SliverPersistentHeaderDelegate {
                 child: Opacity(
                   opacity: lerpDouble(1, 0.0, ratio) ?? 0,
                   child: Text(
-                      "$subtitle — ${todos.where((element) => element.done).length}",
+                      "$subtitle — ${todos.entries.where((element) => element.value.done).length}",
                       style: theme.textTheme.bodyMedium
                           ?.copyWith(color: theme.colorScheme.onTertiary)),
                 ),

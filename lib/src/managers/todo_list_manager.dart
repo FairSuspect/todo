@@ -57,19 +57,20 @@ class TodoListManager implements TodoListBaseController {
   @override
   Future<void> getTodos() async {
     final todos = await TodoService().getItemList();
-    state.updateList(todos);
+    final todosMap = Map.fromIterables(todos.map((e) => e.id), todos);
+    state.updateMap(todosMap);
   }
 
   @override
-  Future<void> onChecked(int index, bool? value) async {
-    final todo = state.onChecked(index, value);
+  Future<void> onChecked(String id, bool? value) async {
+    final todo = state.onChecked(id, value);
     repository.putTodo(todo);
   }
 
   @override
-  void delete(Todo todo) {
-    final deletedTodo = state.deleteTodo(todo);
-    repository.deleteTodo(deletedTodo.id!);
+  void delete(String id) {
+    final deletedTodo = state.deleteTodo(id);
+    repository.deleteTodo(deletedTodo.id);
   }
 
   @override
@@ -104,38 +105,47 @@ class TodoListManager implements TodoListBaseController {
 }
 
 final todoListStateProvider =
-    StateNotifierProvider<TodoListStateHolder, List<Todo>>((ref) {
-  return TodoListStateHolder([]);
+    StateNotifierProvider<TodoListStateHolder, Map<String, Todo>>((ref) {
+  return TodoListStateHolder({});
 });
 
-class TodoListStateHolder extends StateNotifier<List<Todo>> {
+class TodoListStateHolder extends StateNotifier<Map<String, Todo>> {
   TodoListStateHolder(super.state);
 
-  int get completedCount => state.where((todo) => todo.done).length;
-  void updateList(List<Todo> todos) {
+  int get completedCount => state.entries.where((e) => e.value.done).length;
+
+  void updateMap(Map<String, Todo> todos) {
     state = todos;
   }
 
-  Todo deleteTodo(Todo todo) {
-    final isDeleted = state.remove(todo);
-    if (!isDeleted) {
-      throw StateError("Не удалось удалить элемент из состояния");
-    }
-    return todo;
+  Todo deleteTodo(String id) {
+    final stateCopy = Map<String, Todo>.from(state);
+
+    final deletedTodo = stateCopy.remove(id);
+    state = stateCopy;
+
+    return deletedTodo!;
   }
 
   void createTodo(Todo todo) {
-    state.add(todo);
+    final stateCopy = Map<String, Todo>.from(state);
+    stateCopy[todo.id] = todo;
+    state = stateCopy;
   }
 
   void updateTodo(Todo todo) {
-    final index = state.indexWhere((element) => element.id == todo.id);
-    state[index] = todo;
+    final stateCopy = Map<String, Todo>.from(state);
+    stateCopy[todo.id] = todo;
+    state = stateCopy;
   }
 
-  Todo onChecked(int index, bool? value) {
-    state[index] = state[index].copyWith(done: value ?? false);
-    return state[index];
+  Todo onChecked(String id, bool? value) {
+    final stateCopy = Map<String, Todo>.from(state);
+    final newTodo = stateCopy[id]!.copyWith(done: value ?? false);
+    stateCopy[id] = newTodo;
+    state = stateCopy;
+
+    return newTodo;
   }
 }
 
@@ -167,17 +177,18 @@ class FilterMananger {
   }
 }
 
-class FilteredTodosNotifier extends StateNotifier<List<Todo>> {
+class FilteredTodosNotifier extends StateNotifier {
   FilteredTodosNotifier(super.state);
 }
 
-final filteredTodosProvider = StateProvider<List<Todo>>((ref) {
+final filteredTodosProvider = StateProvider<Map<String, Todo>>((ref) {
   final todos = ref.watch(todoListStateProvider);
   // Если фильтр включён - возвращаем отфильтрованные
   if (ref.watch(filterProvider)) {
-    return todos.where((todo) => !todo.done).toList();
+    final iterable = todos.values.where((e) => !e.done);
+    return Map.fromIterables(iterable.map((e) => e.id), iterable);
   }
   // Иначе возвращаем все
 
-  return todos.toList();
+  return todos;
 });
