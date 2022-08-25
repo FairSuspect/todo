@@ -55,17 +55,16 @@ class TodoRepository implements TodoBaseRepository<Todo> {
       if (remoteService.lastKnownRevision > localService.lastKnownRevision) {
         todos = Map.fromIterables(remoteTodos.map((e) => e.id), remoteTodos);
 
-        localService.putList(remoteTodos);
+        localService.putMap(localTodos);
         onRevisionUpdated(remoteService.lastKnownRevision);
       } else {
-        todos = Map.fromIterables(localTodos.map((e) => e.id), localTodos);
+        todos = localTodos;
         remoteService.patchList(todos.values.toList());
       }
     } on DioError {
       final localTodos = await localService.getAll();
 
-      todos =
-          todos = Map.fromIterables(localTodos.map((e) => e.id), localTodos);
+      todos = localTodos;
     }
   }
 

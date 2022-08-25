@@ -56,9 +56,10 @@ class TodoListManager implements TodoListBaseController {
 
   @override
   Future<void> getTodos() async {
-    final todos = await TodoService().getItemList();
-    final todosMap = Map.fromIterables(todos.map((e) => e.id), todos);
-    state.updateMap(todosMap);
+    await repository.getTodoList();
+    final todos = repository.todos;
+
+    state.updateMap(todos);
   }
 
   @override
