@@ -16,7 +16,7 @@ class TodoRepository implements TodoBaseRepository<Todo> {
   final TodoService remoteService;
   final LocalService<Todo> localService;
 
-  List<Todo> todos = [];
+  Map<String, Todo> todos = {};
 
   @override
   Future<void> createTodo(Todo todo) async {
@@ -26,18 +26,17 @@ class TodoRepository implements TodoBaseRepository<Todo> {
         lastUpdatedBy: "debug",
         createdAt: dateCreated,
         changedAt: dateCreated);
-    todos.add(todo);
-    localService.createValue(todo);
+    todos[todo.id] = todo;
+    await localService.createValue(todo);
     await remoteService.createTodo(todo);
     await onRevisionUpdated(remoteService.lastKnownRevision);
   }
 
   @override
   Future<void> deleteTodo(String id) async {
-    final index = todos.indexWhere((element) => element.id == id);
-    final deletedId = todos.removeAt(index).id;
-    localService.deleteValue(deletedId);
-    await remoteService.deleteTodo(deletedId);
+    todos.remove(id);
+    await localService.deleteValue(id);
+    await remoteService.deleteTodo(id);
 
     await onRevisionUpdated(remoteService.lastKnownRevision);
   }
@@ -54,15 +53,19 @@ class TodoRepository implements TodoBaseRepository<Todo> {
       final remoteTodos = await remoteService.getItemList();
       final localTodos = await localService.getAll();
       if (remoteService.lastKnownRevision > localService.lastKnownRevision) {
-        todos = remoteTodos;
+        todos = Map.fromIterables(remoteTodos.map((e) => e.id), remoteTodos);
+
         localService.putList(remoteTodos);
         onRevisionUpdated(remoteService.lastKnownRevision);
       } else {
-        todos = localTodos;
-        remoteService.patchList(todos);
+        todos = Map.fromIterables(localTodos.map((e) => e.id), localTodos);
+        remoteService.patchList(todos.values.toList());
       }
     } on DioError {
-      todos = await localService.getAll();
+      final localTodos = await localService.getAll();
+
+      todos =
+          todos = Map.fromIterables(localTodos.map((e) => e.id), localTodos);
     }
   }
 
@@ -74,12 +77,7 @@ class TodoRepository implements TodoBaseRepository<Todo> {
 
   @override
   Future<void> putTodo(Todo todo) async {
-    final index = todos.indexWhere((element) => element.id == todo.id);
-    if (index == -1) {
-      throw StateError("Не найден элемент для обновления");
-    }
-
-    todos[index] = todo;
+    todos[todo.id] = todo;
     localService.updateValue(todo);
     await remoteService.updateTodo(todo);
     await onRevisionUpdated(remoteService.lastKnownRevision);
