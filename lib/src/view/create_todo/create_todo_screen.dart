@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:todo/src/managers/create_todo_manager.dart';
+import 'package:todo/src/managers/todo_list_manager.dart';
 import 'package:todo/src/misc/extensions/todo.dart';
 import 'package:todo/src/misc/theme/extensions.dart';
 import 'package:todo/src/misc/validators/text_input_validators.dart';
@@ -62,7 +63,11 @@ class CreateTodoScreen extends StatelessWidget {
                   onTap: ref
                           .read(createTodoStateHolderProvider.notifier)
                           .canBeDeleted
-                      ? () {}
+                      ? () {
+                          ref.read(todoListManagerProvider).delete(
+                              ref.read(createTodoStateHolderProvider).id);
+                          ref.read(createTodoManagerProvider).onDeleteTap();
+                        }
                       : null,
                 )
               ],

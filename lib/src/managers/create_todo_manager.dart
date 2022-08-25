@@ -61,6 +61,11 @@ class CreateTodoManager implements CreateTodoBaseController {
     state.setState(Todo.blank());
     return false;
   }
+
+  @override
+  void onDeleteTap() {
+    Navigation().key.currentState!.pop();
+  }
 }
 
 final createTodoStateHolderProvider =

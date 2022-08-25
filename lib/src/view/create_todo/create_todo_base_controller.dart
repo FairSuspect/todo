@@ -16,9 +16,7 @@ abstract class CreateTodoBaseController {
 
   void save();
 
-  bool get canBeDeleted;
-
   Future<bool> onWillPop();
 
-  void delete();
+  void onDeleteTap();
 }
