@@ -91,7 +91,7 @@ class CreateTodoStateHolder extends StateNotifier<Todo> {
   }
 
   /// Удалять можно только созданные задачи. Такие задачи имеют id
-  bool get canBeDeleted => state.id != null;
+  bool get canBeDeleted => state.createdAt != null;
 
   void pop() {
     Navigation().key.currentState!.pop(state);

@@ -206,7 +206,7 @@ class DeleteRow extends StatelessWidget {
       iconColor: color,
       leading: const Icon(Icons.delete),
       title: Text(AppLocalizations.of(context).delete,
-          style: theme.textTheme.bodyMedium?.copyWith(color: redColor)),
+          style: theme.textTheme.bodyMedium?.copyWith(color: color)),
       onTap: onTap,
     );
   }
