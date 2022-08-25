@@ -67,7 +67,7 @@ class TodoService {
     late final Response response;
     try {
       response = await Api().dio.put(
-            ApiPath.put(todo.id!),
+            ApiPath.put(todo.id),
             data: {"element": todo.toJson()},
             options: _revisionHeadersOptions,
           );
@@ -75,7 +75,7 @@ class TodoService {
       if (e.response?.statusCode == 400) {
         await updateRevision();
         response = await Api().dio.put(
-              ApiPath.put(todo.id!),
+              ApiPath.put(todo.id),
               data: {"element": todo.toJson()},
               options: _revisionHeadersOptions,
             );

@@ -2,6 +2,8 @@ import 'package:hive/hive.dart';
 import 'package:todo/src/models/todo.dart';
 import 'local_service.dart';
 
+typedef LocalTodos = Map<String, Todo>;
+
 class HiveService implements LocalService<Todo> {
   static const String _todoBoxName = "todos";
   static const String _collectionName = "TodoHive";
@@ -51,7 +53,7 @@ class HiveService implements LocalService<Todo> {
   }
 
   @override
-  Future<List<Todo>> putList(List<Todo> list) async {
+  Future<LocalTodos> putMap(LocalTodos list) async {
     final collection = await BoxCollection.open(
       _collectionName,
       {_todoBoxName},
@@ -59,12 +61,12 @@ class HiveService implements LocalService<Todo> {
 
     final todosBox = await collection.openBox<Todo>(_todoBoxName);
     await todosBox.clear();
-    for (var todo in list) {
-      await todosBox.put(todo.id!, todo);
+    for (var todo in list.values) {
+      await todosBox.put(todo.id, todo);
     }
     final keys = await todosBox.getAllKeys();
     final nullableList = await todosBox.getAll(keys);
-    final List<Todo> array = castNullableListToList(nullableList);
+    final LocalTodos array = castNullableListToList(nullableList);
     collection.close();
     return array;
   }
@@ -78,7 +80,7 @@ class HiveService implements LocalService<Todo> {
 
     final todosBox = await collection.openBox(_todoBoxName);
 
-    final response = await todosBox.get(value.id!);
+    final response = await todosBox.get(value.id);
     collection.close();
     lastKnownRevision++;
 
@@ -103,7 +105,7 @@ class HiveService implements LocalService<Todo> {
   }
 
   @override
-  Future<List<Todo>> getAll() async {
+  Future<LocalTodos> getAll() async {
     final collection = await BoxCollection.open(
       _collectionName,
       {_todoBoxName},
@@ -113,10 +115,10 @@ class HiveService implements LocalService<Todo> {
     final keys = await todosBox.getAllKeys();
     if (keys.isEmpty) {
       collection.close();
-      return [];
+      return {};
     }
     final nullableList = await todosBox.getAll(keys);
-    final List<Todo> array = castNullableListToList(nullableList);
+    final LocalTodos array = castNullableListToList(nullableList);
     collection.close();
     return array;
   }
@@ -130,16 +132,16 @@ class HiveService implements LocalService<Todo> {
 
     final todosBox = await collection.openBox<Todo>(_todoBoxName);
 
-    await todosBox.put(value.id!, value);
-    final response = await todosBox.get(value.id!);
+    await todosBox.put(value.id, value);
+    final response = await todosBox.get(value.id);
     collection.close();
     lastKnownRevision++;
 
     return response!;
   }
 
-  List<Todo> castNullableListToList(List<Todo?> list) {
-    return list
+  LocalTodos castNullableListToList(List<Todo?> list) {
+    final filteredList = list
         .where((element) => element != null)
         .map((todo) => Todo(
               text: todo!.text,
@@ -152,5 +154,9 @@ class HiveService implements LocalService<Todo> {
               lastUpdatedBy: todo.lastUpdatedBy,
             ))
         .toList();
+    filteredList.sort(
+      (a, b) => a.createdAt!.compareTo(b.createdAt!),
+    );
+    return Map.fromIterables(filteredList.map((e) => e.id), filteredList);
   }
 }

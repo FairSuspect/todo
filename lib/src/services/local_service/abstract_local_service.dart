@@ -4,9 +4,9 @@ abstract class LocalService<T> {
 
   Future<int?> getRevision();
 
-  Future<List<T>> putList(List<T> list);
+  Future<Map<String, T>> putMap(Map<String, T> list);
   Future<T> updateValue(T value);
   Future<T> deleteValue(String id);
-  Future<List<T>> getAll();
+  Future<Map<String, T>> getAll();
   Future<T> createValue(T value);
 }

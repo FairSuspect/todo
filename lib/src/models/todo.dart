@@ -3,6 +3,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hive/hive.dart';
+import 'package:uuid/uuid.dart';
 
 part 'todo.freezed.dart';
 part 'todo.g.dart';
@@ -12,7 +13,7 @@ class Todo with _$Todo {
   @HiveType(typeId: 0, adapterName: "TodoAdapter")
   @JsonKey(name: "element")
   const factory Todo({
-    @HiveField(0) String? id,
+    @HiveField(0) required String id,
     @HiveField(1) required String text,
     @Default(Importance.low) @HiveField(2) Importance importance,
     @JsonKey(fromJson: _dateTimefromJson, toJson: _dateTimeToJson)
@@ -27,6 +28,15 @@ class Todo with _$Todo {
   factory Todo.fromJson(Map<String, Object?> json) => _$TodoFromJson(json);
   static List<Todo> listFromJson(List<dynamic> list) =>
       list.map((json) => Todo.fromJson(json)).toList();
+
+  factory Todo.createFromText({required String text}) => Todo(
+        id: const Uuid().v4(),
+        text: text,
+        changedAt: DateTime.now().millisecondsSinceEpoch,
+        createdAt: DateTime.now().millisecondsSinceEpoch,
+      );
+
+  factory Todo.blank() => Todo(text: '', id: const Uuid().v4());
 }
 
 DateTime? _dateTimefromJson(int? int) =>
