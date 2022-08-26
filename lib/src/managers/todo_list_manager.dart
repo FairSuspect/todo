@@ -76,7 +76,7 @@ class TodoListManager implements TodoListBaseController {
 
   @override
   Future<void> onFABPressed() async {
-    final Todo? newTodo = await Navigation().key.currentState!.push<Todo?>(
+    final newTodo = await Navigation().key.currentState!.push<Todo?>(
         MaterialPageRoute(builder: (_) => const CreateTodoScreen()));
     if (newTodo == null) {
       selectedTodo = null;
