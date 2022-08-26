@@ -49,7 +49,7 @@ class TodoListManager implements TodoListBaseController {
 
   @override
   void createTodoFromText(String text) {
-    final Todo todo = Todo.createFromText(text: text);
+    final todo = Todo.createFromText(text: text);
     state.createTodo(todo);
     repository.createTodo(todo);
   }
