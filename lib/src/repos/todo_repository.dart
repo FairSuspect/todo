@@ -82,7 +82,5 @@ class TodoRepository implements TodoBaseRepository<Todo> {
     await onRevisionUpdated(remoteService.lastKnownRevision);
   }
 
-  Future<void> onRevisionUpdated(int revision) async {
-    await localService.storeRevision(revision);
-  }
+  Future<void> onRevisionUpdated(int revision) => localService.storeRevision(revision);
 }
