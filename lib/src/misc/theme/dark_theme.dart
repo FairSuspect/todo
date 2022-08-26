@@ -7,15 +7,40 @@ final darkTheme = ThemeData(
   backgroundColor: _backPrimary,
   scaffoldBackgroundColor: _backPrimary,
   appBarTheme: const AppBarTheme(backgroundColor: _backPrimary),
+  canvasColor: _backElevated,
+  listTileTheme: const ListTileThemeData(
+    // tileColor: _backSecondary,
+    textColor: _labelPrimary,
+  ),
+  toggleableActiveColor: _blue,
+  switchTheme:
+      SwitchThemeData(trackColor: MaterialStateProperty.resolveWith((states) {
+    late final Color color;
+    if (states.contains(MaterialState.disabled)) {
+      color = _backElevated;
+    } else {
+      color = _blue;
+    }
+    return color.withOpacity(.3);
+  }), thumbColor: MaterialStateProperty.resolveWith((states) {
+    if (states.contains(MaterialState.disabled)) return _backElevated;
+    return _blue;
+  })),
+  cardColor: _backSecondary,
   textTheme: const TextTheme(
-    titleLarge:
-        TextStyle(fontSize: 32, height: 38 / 32, fontWeight: FontWeight.w500),
+    titleLarge: TextStyle(
+        fontSize: 32,
+        height: 38 / 32,
+        fontWeight: FontWeight.w500,
+        color: _labelPrimary),
     titleMedium:
         TextStyle(fontSize: 20, height: 32 / 20, fontWeight: FontWeight.w500),
     bodyMedium: _defaultTextTheme,
     titleSmall:
         TextStyle(fontSize: 14, height: 20 / 14, fontWeight: FontWeight.w400),
   ),
+  checkboxTheme: CheckboxThemeData(
+      fillColor: MaterialStateProperty.resolveWith((states) => _separator)),
   inputDecorationTheme:
       const InputDecorationTheme(hintStyle: _defaultTextTheme),
   textButtonTheme: TextButtonThemeData(
@@ -34,7 +59,7 @@ final darkTheme = ThemeData(
     onPrimary: _labelPrimary,
     onSecondary: _labelSecondary,
     onTertiary: _labelTertiary,
-    surface: _backsecondary,
+    surface: _backSecondary,
   ),
   iconTheme: const IconThemeData(color: _blue),
   disabledColor: _labelDisable,
@@ -44,11 +69,26 @@ final darkTheme = ThemeData(
   ),
 );
 
-const _defaultTextTheme =
-    TextStyle(fontSize: 16, height: 20 / 16, fontWeight: FontWeight.w400);
+const _defaultTextTheme = TextStyle(
+    fontSize: 16,
+    height: 20 / 16,
+    fontWeight: FontWeight.w400,
+    color: _labelPrimary);
+final customColorsDark = CustomColors(
+  red: _red,
+  green: _green,
+  blue: _blue,
+  gray: _gray,
+  grayLight: _grayLight,
+  white: _white,
+);
+final layoutColorsDark = LayoutColors(
+  seperatorColor: _separator,
+  overlayColor: _overlay,
+);
 
 /// Support [Light] / Separator
-const Color _separator = Color(0x330FFFFF);
+const Color _separator = Color(0x33FFFFFF);
 
 /// Support [Light] / Overlay
 const Color _overlay = Color(0x52000000);
@@ -80,7 +120,7 @@ const Color _white = Color(0xFFFFFFFF);
 const Color _backPrimary = Color(0xFF16161B);
 
 /// Back [Dark] / Secondary
-const Color _backsecondary = Color(0xFF252528);
+const Color _backSecondary = Color(0xFF252528);
 
 /// Back [Dark] / Elevated
 const Color _backElevated = Color(0xFF3C3C3F);

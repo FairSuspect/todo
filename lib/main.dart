@@ -61,7 +61,10 @@ class MyApp extends StatelessWidget {
           customColorsLight.copyWith(red: importanceColor),
           layoutColorsLight
         ]),
-        darkTheme: darkTheme,
+        darkTheme: darkTheme.copyWith(extensions: [
+          customColorsDark.copyWith(red: importanceColor),
+          layoutColorsDark
+        ]),
         themeMode: ThemeMode.light,
         onGenerateTitle: (context) => AppLocalizations.of(context).title,
         locale: Locale("ru", "RU"),
