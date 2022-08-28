@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
 import 'package:todo/src/managers/repository_manager.dart';
 import 'package:todo/src/repos/todo_repository.dart';
 import 'package:todo/src/routing/deletage.dart';
@@ -37,18 +38,27 @@ class TodoListManager implements TodoListBaseController {
 
   @override
   void createTodo(Todo todo) {
-    state.createTodo(todo);
+    try {
+      state.createTodo(todo);
 
-    repository.createTodo(todo);
-    Analytics.logTodoCreated();
+      repository.createTodo(todo);
+      Analytics.logTodoCreated();
+    } catch (e) {
+      Logger("TodoListManager").log(Level.SHOUT, e);
+    }
   }
 
   @override
   void createTodoFromText(String text) {
-    final todo = Todo.createFromText(text: text);
-    state.createTodo(todo);
-    repository.createTodo(todo);
-    Analytics.logTodoCreated();
+    try {
+      final todo = Todo.createFromText(text: text);
+      state.createTodo(todo);
+      repository.createTodo(todo);
+      Analytics.logTodoCreated();
+      Analytics.logTodoCreated();
+    } catch (e) {
+      Logger("TodoListManager").log(Level.SHOUT, e);
+    }
   }
 
   @override
@@ -60,16 +70,24 @@ class TodoListManager implements TodoListBaseController {
 
   @override
   Future<void> onChecked(String id, bool? value) async {
-    final todo = state.onChecked(id, value);
-    repository.putTodo(todo);
-    Analytics.logTodoCompleted();
+    try {
+      final todo = state.onChecked(id, value);
+      repository.putTodo(todo);
+      Analytics.logTodoCompleted();
+    } catch (e) {
+      Logger("TodoListManager").log(Level.SHOUT, e);
+    }
   }
 
   @override
   void delete(String id) {
-    final deletedTodo = state.deleteTodo(id);
-    repository.deleteTodo(deletedTodo.id);
-    Analytics.logTodoDeleted();
+    try {
+      final deletedTodo = state.deleteTodo(id);
+      repository.deleteTodo(deletedTodo.id);
+      Analytics.logTodoDeleted();
+    } catch (e) {
+      Logger("TodoListManager").log(Level.SHOUT, e);
+    }
   }
 
   @override
