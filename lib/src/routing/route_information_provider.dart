@@ -1,18 +1,18 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:logging/logging.dart';
+import 'package:todo/src/services/firebase/analytics.dart';
 
-class DebugRouteInformationProvider extends PlatformRouteInformationProvider {
-  DebugRouteInformationProvider()
+class AnalyticsRouteInformationProvider
+    extends PlatformRouteInformationProvider {
+  AnalyticsRouteInformationProvider()
       : super(
             initialRouteInformation: RouteInformation(
                 location: PlatformDispatcher.instance.defaultRouteName));
 
   @override
   Future<bool> didPushRoute(String route) {
-    Logger("Navigation").log(Level.INFO, 'Platform reports $route');
-    // TODO: Put analytics here
+    Analytics.logScreenView(route);
     return super.didPushRoute(route);
   }
 }

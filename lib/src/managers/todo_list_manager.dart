@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:todo/src/managers/repository_manager.dart';
 import 'package:todo/src/repos/todo_repository.dart';
 import 'package:todo/src/routing/deletage.dart';
+import 'package:todo/src/services/firebase/analytics.dart';
 import 'package:todo/src/services/navigation.dart';
 import 'package:todo/src/models/todo.dart';
 import 'package:todo/src/view/list_todo/todo_list_base_controller.dart';
@@ -39,6 +40,7 @@ class TodoListManager implements TodoListBaseController {
     state.createTodo(todo);
 
     repository.createTodo(todo);
+    Analytics.logTodoCreated();
   }
 
   @override
@@ -46,6 +48,7 @@ class TodoListManager implements TodoListBaseController {
     final todo = Todo.createFromText(text: text);
     state.createTodo(todo);
     repository.createTodo(todo);
+    Analytics.logTodoCreated();
   }
 
   @override
@@ -59,12 +62,14 @@ class TodoListManager implements TodoListBaseController {
   Future<void> onChecked(String id, bool? value) async {
     final todo = state.onChecked(id, value);
     repository.putTodo(todo);
+    Analytics.logTodoCompleted();
   }
 
   @override
   void delete(String id) {
     final deletedTodo = state.deleteTodo(id);
     repository.deleteTodo(deletedTodo.id);
+    Analytics.logTodoDeleted();
   }
 
   @override

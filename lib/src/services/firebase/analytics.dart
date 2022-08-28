@@ -26,4 +26,8 @@ class Analytics {
     FirebaseAnalytics.instance
         .logScreenView(screenName: 'edit', screenClass: 'todo');
   }
+
+  static void logScreenView(String screenName) {
+    FirebaseAnalytics.instance.logScreenView(screenName: screenName);
+  }
 }
