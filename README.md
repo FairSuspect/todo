@@ -5,6 +5,16 @@ Todo-приложение для летней школы Яндекса 2022
 ## Ссылка на скачивание apk
 https://disk.yandex.ru/d/PgOHvZ3P0HiAbg
 
+## Алгоритм сборки 
+ + Создать файл .env
+```
+BASE_URL=https://beta.mrdekk.ru/todobackend
+TOKEN=API_KEY
+```
+ + `flutter pub get`
+ + `flutter gen-l10n`
+ + `flutter pub run build_runner --delete-conflicting-outputs`
+ + `flutter run`
 
 ## Реализованные фичи
  + Создание задачи из экрана создания задачи
@@ -36,6 +46,8 @@ https://disk.yandex.ru/d/PgOHvZ3P0HiAbg
  ## Доработки после дедлайна (не успел)
  + Покрытие тестами
  + Флейворы dev\release
+
+ 
 
  ## Скриншоты из первой фазы
 
