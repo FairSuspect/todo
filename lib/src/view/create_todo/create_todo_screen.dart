@@ -131,6 +131,7 @@ class ImportanceSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -142,6 +143,21 @@ class ImportanceSelector extends StatelessWidget {
             underline: const SizedBox.shrink(),
             icon: const SizedBox.shrink(),
             value: importance,
+            selectedItemBuilder: (BuildContext context) {
+              return Importance.values.map((importance) {
+                return Center(
+                  child: importance == Importance.important
+                      ? ImportantDropDownChild(
+                          text: importance.translateImportance(context),
+                        )
+                      : Text(
+                          importance.translateImportance(context),
+                          style: theme.textTheme.bodyMedium!
+                              .copyWith(color: theme.colorScheme.onTertiary),
+                        ),
+                );
+              }).toList();
+            },
             items: Importance.values.map((importance) {
               return DropdownMenuItem(
                 value: importance,
@@ -151,7 +167,7 @@ class ImportanceSelector extends StatelessWidget {
                       )
                     : Text(
                         importance.translateImportance(context),
-                        style: Theme.of(context).textTheme.bodyMedium,
+                        style: theme.textTheme.bodyMedium,
                       ),
               );
             }).toList(),
@@ -178,41 +194,42 @@ class ImportantDropDownChild extends StatelessWidget {
   }
 }
 
-class DeadlineSwitch extends StatelessWidget {
+class DeadlineSwitch extends ConsumerWidget {
   const DeadlineSwitch({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    return Consumer(builder: (context, ref, child) {
-      final deadline = ref
-          .watch(createTodoStateHolderProvider.select((todo) => todo.deadline));
-      return SwitchListTile.adaptive(
-        contentPadding: EdgeInsets.zero,
-        title: Text(AppLocalizations.of(context).makeBy,
-            style: theme.textTheme.bodyMedium),
-        visualDensity: VisualDensity.standard,
-        subtitle: deadline != null
-            ? InkWell(
-                child: Text(
-                  DateFormat.yMMMMd(AppLocalizations.of(context).localeName)
-                      .format(deadline),
-                  style: theme.textTheme.titleSmall
-                      ?.copyWith(color: theme.extension<CustomColors>()?.blue),
-                ),
-                onTap: () {
-                  ref.read(createTodoManagerProvider).pickDeadline(context);
-                },
-              )
-            : null,
-        value: deadline != null,
-        onChanged: (value) {
-          ref
-              .read(createTodoManagerProvider)
-              .onDeadlineSwitchChanged(context, value);
-        },
-      );
-    });
+
+    final deadline = ref
+        .watch(createTodoStateHolderProvider.select((todo) => todo.deadline));
+    return SwitchListTile(
+      inactiveThumbColor: theme.canvasColor,
+      inactiveTrackColor: theme.extension<LayoutColors>()?.overlayColor,
+      contentPadding: EdgeInsets.zero,
+      title: Text(AppLocalizations.of(context).makeBy,
+          style: theme.textTheme.bodyMedium),
+      visualDensity: VisualDensity.standard,
+      subtitle: deadline != null
+          ? InkWell(
+              child: Text(
+                DateFormat.yMMMMd(AppLocalizations.of(context).localeName)
+                    .format(deadline),
+                style: theme.textTheme.titleSmall
+                    ?.copyWith(color: theme.extension<CustomColors>()?.blue),
+              ),
+              onTap: () {
+                ref.read(createTodoManagerProvider).pickDeadline(context);
+              },
+            )
+          : null,
+      value: deadline != null,
+      onChanged: (value) {
+        ref
+            .read(createTodoManagerProvider)
+            .onDeadlineSwitchChanged(context, value);
+      },
+    );
   }
 }
 

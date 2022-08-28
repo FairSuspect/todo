@@ -2,7 +2,7 @@ abstract class LocalService<T> {
   int lastKnownRevision = 0;
   Future<void> storeRevision(int revision);
 
-  Future<int?> getRevision();
+  Future<int> getRevision();
 
   Future<Map<String, T>> putMap(Map<String, T> list);
   Future<T> updateValue(T value);

@@ -71,14 +71,14 @@ class TodoRepository implements TodoBaseRepository<Todo> {
     late final List<Todo> remoteTodos;
     try {
       remoteTodos = await remoteService.getItemList();
-      final localTodos = await localService.getAll();
+      final localRevision = await localService.getRevision();
       if (remoteService.lastKnownRevision > localService.lastKnownRevision) {
         todos = Map.fromIterables(remoteTodos.map((e) => e.id), remoteTodos);
 
-        localService.putMap(localTodos);
+        await localService.putMap(todos);
         onRevisionUpdated(remoteService.lastKnownRevision);
       } else {
-        todos = localTodos;
+        todos = await localService.getAll();
         remoteService.patchList(todos.values.toList());
       }
     } on DioError {
@@ -104,5 +104,6 @@ class TodoRepository implements TodoBaseRepository<Todo> {
     await onRevisionUpdated(remoteService.lastKnownRevision);
   }
 
-  Future<void> onRevisionUpdated(int revision) => localService.storeRevision(revision);
+  Future<void> onRevisionUpdated(int revision) =>
+      localService.storeRevision(revision);
 }

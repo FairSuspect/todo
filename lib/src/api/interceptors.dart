@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:logging/logging.dart';
 
 class AppInterceptors extends Interceptor {
   final Dio dio;
@@ -7,19 +8,8 @@ class AppInterceptors extends Interceptor {
 
   @override
   void onResponse(Response response, ResponseInterceptorHandler handler) {
-    // TODO: implement onResponse
+    Logger('Dio').log(Level.INFO,
+        "${response.requestOptions.path} [${response.requestOptions.method}] — ${response.statusCode} (${response.statusMessage})");
     super.onResponse(response, handler);
-  }
-
-  @override
-  void onError(DioError err, ErrorInterceptorHandler handler) {
-    super.onError(err, handler);
-  }
-
-  @override
-  void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
-    print(
-        "Making ${options.method} request (${options.path}) with revision: ${options.headers['X-Last-Known-Revision']}");
-    super.onRequest(options, handler);
   }
 }
