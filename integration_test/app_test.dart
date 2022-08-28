@@ -11,46 +11,50 @@ void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   group('end-to-end test', () {
-    testWidgets("Render main page with 2 todos", (widgetTester) async {
-      await app.main();
-      await widgetTester.pumpAndSettle();
-      final testTextFinder = find.text("Test text");
-      final textWidgetsFinder = find.byType(Text);
-      final todoTileFinder = find.byType(TodoTile);
-      final textFieldFinder = find.byType(TextField);
-      final fabFinder = find.byType(FloatingActionButton);
-      expect(todoTileFinder, findsNWidgets(2));
-      expect(textWidgetsFinder, findsWidgets);
-      expect(testTextFinder, findsOneWidget);
-      expect(textFieldFinder, findsOneWidget);
-      expect(fabFinder, findsOneWidget);
-    });
     testWidgets(
-      "Edit todo",
+      "Render main page with 2 todos",
       (widgetTester) async {
         await app.main();
-        await widgetTester.pumpAndSettle();
-        final testTextFinder = find.text("Test text");
+        // Время на выполнение запроса
+        await widgetTester.pumpAndSettle(const Duration(seconds: 3));
 
-        await widgetTester.tap(testTextFinder);
-        await widgetTester.pumpAndSettle();
-        final textFieldFinder = find.byType(TextFormField);
+        final textWidgetsFinder = find.byType(Text);
+        final todoTileFinder = find.byType(TodoTile);
+        final textFieldFinder = find.byType(TextField);
+        final fabFinder = find.byType(FloatingActionButton);
+
+        await widgetTester.scrollUntilVisible(textFieldFinder, 100);
+        expect(todoTileFinder, findsWidgets);
+        expect(textWidgetsFinder, findsWidgets);
+        expect(textFieldFinder, findsOneWidget);
+        expect(fabFinder, findsOneWidget);
+
+        // Выбираем любую задачу (здесь последнюю)
+        await widgetTester.tap(todoTileFinder.last);
+        await widgetTester.pumpAndSettle(const Duration(seconds: 1));
         const text = 'Edited text';
+        // Меняем текст
         await widgetTester.enterText(textFieldFinder, text);
+        await widgetTester.pumpAndSettle(const Duration(milliseconds: 600));
+
+        // Меняем важность
         final dropDownFinder = find.byType(DropdownButton<Importance>);
         await widgetTester.tap(dropDownFinder);
-        await widgetTester.pumpAndSettle();
+        await widgetTester.pumpAndSettle(const Duration(milliseconds: 600));
+
         final importantFinder = find
             .byWidgetPredicate((widget) => widget is ImportantDropDownChild)
             .last;
         await widgetTester.tap(importantFinder);
-        await widgetTester.pumpAndSettle();
+        await widgetTester.pumpAndSettle(const Duration(milliseconds: 600));
+
+        // Сохраняем
         final saveButton = find.byType(TextButton);
         await widgetTester.tap(saveButton);
-        await widgetTester.pumpAndSettle();
+        await widgetTester.pumpAndSettle(const Duration(milliseconds: 600));
+        // Ищем отредактированную задачу
         final newTextFinder = find.text(text);
         expect(newTextFinder, findsOneWidget);
-        expect(testTextFinder, findsNothing);
       },
     );
   });
