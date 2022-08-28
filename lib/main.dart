@@ -8,7 +8,6 @@ import 'package:todo/src/misc/dotenv.dart';
 import 'package:todo/src/misc/theme/theme.dart';
 import 'package:todo/src/routing/deletage.dart';
 import 'package:todo/src/routing/route_information_provider.dart';
-import 'package:todo/src/services/firebase.dart';
 import 'package:todo/src/services/scaffold_messenger_serivce.dart';
 
 import 'package:flutter_localizations/flutter_localizations.dart';
