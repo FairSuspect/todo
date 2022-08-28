@@ -12,7 +12,6 @@ final todoListManagerProvider = Provider((ref) {
       state: ref.watch(todoListStateProvider.notifier),
       filterState: ref.read(filterProvider),
       repository: ref.read(repositoryManager));
-
   todoListManager.getTodos();
   return todoListManager;
 });
