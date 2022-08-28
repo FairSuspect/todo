@@ -9,73 +9,89 @@ import 'package:todo/src/misc/validators/text_input_validators.dart';
 import 'package:todo/src/models/todo.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-class CreateTodoScreen extends StatelessWidget {
+class CreateTodoScreen extends ConsumerStatefulWidget {
   const CreateTodoScreen({super.key, required this.todoId});
   final String? todoId;
+
+  @override
+  ConsumerState<CreateTodoScreen> createState() => _CreateTodoScreenState();
+}
+
+class _CreateTodoScreenState extends ConsumerState<CreateTodoScreen> {
+  @override
+  void initState() {
+    super.initState();
+    if (widget.todoId != null) {
+      final todo = ref.read(createTodoStateHolderProvider);
+      if (todo.isBlank || todo.id != widget.todoId) {
+        ref.read(createTodoManagerProvider).getTodo(widget.todoId!);
+      }
+    } else {
+      Future(() => ref.read(createTodoManagerProvider).setActiveTodo(null));
+    }
+  }
+
+  @override
+  void dispose() {
+    // ref.read(createTodoStateHolderProvider.notifier).textController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final tr = AppLocalizations.of(context);
-    return Consumer(builder: (context, ref, child) {
-      final provider = ref.read(createTodoManagerProvider);
-      return WillPopScope(
-        onWillPop: provider.onWillPop,
-        child: Scaffold(
-          appBar: AppBar(
-            leading: CloseButton(
+    return Scaffold(
+      appBar: AppBar(
+        leading: const CloseButton(),
+        actions: [
+          TextButton(
               onPressed: () {
-                provider.onWillPop();
+                // Пытался вынести логику отсюда в дополнительный провайдер
+                // Но не смог придумать как получать туду после сохранения
+                if (ref
+                    .read(createTodoManagerProvider)
+                    .formKey
+                    .currentState!
+                    .validate()) {
+                  ref.read(createTodoManagerProvider).save();
+                  final todo = ref.read(createTodoStateHolderProvider);
+                  if (todo.createdAt == null) {
+                    ref.read(todoListManagerProvider).createTodo(todo);
+                  } else {
+                    ref.read(todoListManagerProvider).updateTodo(todo);
+                  }
+                }
               },
-            ),
-            actions: [
-              TextButton(
-                  onPressed: ref.read(createTodoManagerProvider).save,
-                  child: Text(tr.save.toUpperCase())),
-            ],
-          ),
-          body: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 8.0, horizontal: 16.0),
-                  child: Consumer(
-                    builder: (context, ref, child) {
-                      return Form(
-                        key: ref.read(createTodoManagerProvider).formKey,
-                        child: child!,
-                      );
-                    },
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
-                        _TextField(),
-                        SizedBox(height: 8),
-                        ImportanceSelector(),
-                        Divider(),
-                        DeadlineSwitch(),
-                      ],
-                    ),
-                  ),
+              child: Text(tr.save.toUpperCase())),
+        ],
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding:
+                  const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+              child: Form(
+                key: ref.read(createTodoManagerProvider).formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: const [
+                    _TextField(),
+                    SizedBox(height: 8),
+                    ImportanceSelector(),
+                    Divider(),
+                    DeadlineSwitch(),
+                  ],
                 ),
-                const Divider(),
-                DeleteRow(
-                  onTap: ref
-                          .read(createTodoStateHolderProvider.notifier)
-                          .canBeDeleted
-                      ? () {
-                          ref.read(todoListManagerProvider).delete(
-                              ref.read(createTodoStateHolderProvider).id);
-                          ref.read(createTodoManagerProvider).onDeleteTap();
-                        }
-                      : null,
-                )
-              ],
+              ),
             ),
-          ),
+            const Divider(),
+            const DeleteRow()
+          ],
         ),
-      );
-    });
+      ),
+    );
   }
 }
 
@@ -90,11 +106,11 @@ class _TextField extends StatelessWidget {
     return Card(
       margin: EdgeInsets.zero,
       child: Consumer(builder: (context, ref, child) {
-        final state = ref.watch(createTodoStateHolderProvider);
+        final state = ref.watch(createTodoStateHolderProvider.notifier);
 
         return TextFormField(
           style: theme.textTheme.bodyMedium,
-          initialValue: state.text,
+          controller: state.textController,
           minLines: 4,
           maxLines: 100,
           onSaved: ref.read(createTodoManagerProvider).onTextSaved,
@@ -120,11 +136,12 @@ class ImportanceSelector extends StatelessWidget {
       children: [
         Text(AppLocalizations.of(context).importance),
         Consumer(builder: (context, ref, child) {
-          final todo = ref.watch(createTodoStateHolderProvider);
+          final importance = ref.watch(createTodoStateHolderProvider
+              .select((value) => value.importance));
           return DropdownButton<Importance>(
             underline: const SizedBox.shrink(),
             icon: const SizedBox.shrink(),
-            value: todo.importance,
+            value: importance,
             items: Importance.values.map((importance) {
               return DropdownMenuItem(
                 value: importance,
@@ -168,17 +185,18 @@ class DeadlineSwitch extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Consumer(builder: (context, ref, child) {
-      final todo = ref.watch(createTodoStateHolderProvider);
+      final deadline = ref
+          .watch(createTodoStateHolderProvider.select((todo) => todo.deadline));
       return SwitchListTile.adaptive(
         contentPadding: EdgeInsets.zero,
         title: Text(AppLocalizations.of(context).makeBy,
             style: theme.textTheme.bodyMedium),
         visualDensity: VisualDensity.standard,
-        subtitle: todo.deadline != null
+        subtitle: deadline != null
             ? InkWell(
                 child: Text(
                   DateFormat.yMMMMd(AppLocalizations.of(context).localeName)
-                      .format(todo.deadline!),
+                      .format(deadline),
                   style: theme.textTheme.titleSmall
                       ?.copyWith(color: theme.extension<CustomColors>()?.blue),
                 ),
@@ -187,7 +205,7 @@ class DeadlineSwitch extends StatelessWidget {
                 },
               )
             : null,
-        value: todo.deadline != null,
+        value: deadline != null,
         onChanged: (value) {
           ref
               .read(createTodoManagerProvider)
@@ -198,21 +216,31 @@ class DeadlineSwitch extends StatelessWidget {
   }
 }
 
-class DeleteRow extends StatelessWidget {
-  const DeleteRow({Key? key, this.onTap}) : super(key: key);
-  final GestureTapCallback? onTap;
+class DeleteRow extends ConsumerWidget {
+  const DeleteRow({Key? key}) : super(key: key);
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final redColor = theme.errorColor;
-    final color = onTap != null ? redColor : theme.disabledColor;
+    final available = ref.watch(
+            createTodoStateHolderProvider.select((value) => value.createdAt)) !=
+        null;
+
+    final color = available ? redColor : theme.disabledColor;
     return ListTile(
       textColor: color,
       iconColor: color,
       leading: const Icon(Icons.delete),
       title: Text(AppLocalizations.of(context).delete,
           style: theme.textTheme.bodyMedium?.copyWith(color: color)),
-      onTap: onTap,
+      onTap: available
+          ? () {
+              ref.read(createTodoManagerProvider).onDeleteTap();
+              ref
+                  .read(todoListManagerProvider)
+                  .delete(ref.read(createTodoStateHolderProvider).id);
+            }
+          : null,
     );
   }
 }

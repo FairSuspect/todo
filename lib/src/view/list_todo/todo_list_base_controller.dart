@@ -18,4 +18,6 @@ abstract class TodoListBaseController {
   void updateTodo(Todo todo);
 
   void createTodoFromText(String text);
+
+  void openTodoEditor();
 }

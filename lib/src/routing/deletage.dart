@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:logging/logging.dart';
 import 'package:todo/src/services/navigation.dart';
 import 'package:todo/src/view/create_todo/create_todo_screen.dart';
 import 'package:todo/src/view/list_todo/todo_list_screen.dart';
@@ -10,6 +9,8 @@ import 'parsed_route.dart';
 class TodoRouterDelegate extends RouterDelegate<ParsedRoute>
     with ChangeNotifier, PopNavigatorRouterDelegateMixin<ParsedRoute> {
   RouteState state = RouteState(true, null);
+
+  static const ValueKey createTodoValueKey = ValueKey('create');
 
   void gotoMain() {
     state
@@ -33,14 +34,7 @@ class TodoRouterDelegate extends RouterDelegate<ParsedRoute>
   }
 
   @override
-  void notifyListeners() {
-    Logger("Route Delegate").log(Level.INFO, "Notifiying listners with $state");
-    super.notifyListeners();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    Logger("Route Delegate").log(Level.INFO, "Navigator rebuilt with $state");
     return Navigator(
       onPopPage: (route, result) => route.didPop(result),
       // transitionDelegate: BookshelfTransitionDelegate(),
@@ -52,7 +46,12 @@ class TodoRouterDelegate extends RouterDelegate<ParsedRoute>
         ),
         if (!state.isMain)
           MaterialPage(
-            child: CreateTodoScreen(todoId: state.todoId),
+            child: CreateTodoScreen(
+              todoId: state.todoId,
+              key: state.todoId != null
+                  ? ValueKey(state.todoId!)
+                  : createTodoValueKey,
+            ),
           ),
       ],
     );
@@ -65,10 +64,6 @@ class TodoRouterDelegate extends RouterDelegate<ParsedRoute>
 
   @override
   GlobalKey<NavigatorState>? get navigatorKey => GlobalKey();
-  @override
-  Future<void> setInitialRoutePath(ParsedRoute configuration) {
-    return super.setInitialRoutePath(ParsedRoute(true, null));
-  }
 
   @override
   Future<void> setNewRoutePath(ParsedRoute configuration) {

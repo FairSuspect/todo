@@ -10,6 +10,8 @@ part 'todo.g.dart';
 
 @freezed
 class Todo with _$Todo {
+  const Todo._();
+
   @HiveType(typeId: 0, adapterName: "TodoAdapter")
   @JsonKey(name: "element")
   const factory Todo({
@@ -37,6 +39,10 @@ class Todo with _$Todo {
       );
 
   factory Todo.blank() => Todo(text: '', id: const Uuid().v4());
+
+  /// Геттер для определния пустового таска.
+  /// На данный момент таски с пустым текстом не разрешены, поэтому текст является критерием
+  bool get isBlank => text == '';
 }
 
 DateTime? _dateTimefromJson(int? int) =>

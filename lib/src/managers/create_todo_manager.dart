@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:todo/src/managers/repository_manager.dart';
 import 'package:todo/src/models/todo.dart';
+import 'package:todo/src/repos/todo_repository.dart';
 import 'package:todo/src/services/navigation.dart';
 import 'package:todo/src/view/create_todo/create_todo_base_controller.dart';
 
 final createTodoManagerProvider = Provider((ref) {
-  return CreateTodoManager(ref.watch(createTodoStateHolderProvider.notifier));
+  return CreateTodoManager(ref.watch(createTodoStateHolderProvider.notifier),
+      ref.read(repositoryManager));
 });
 
 class CreateTodoManager implements CreateTodoBaseController {
-  CreateTodoManager(this.state);
+  CreateTodoManager(this.state, this.repository);
   final CreateTodoStateHolder state;
+  final TodoRepository repository;
 
   @override
   GlobalKey<FormState> formKey = GlobalKey();
@@ -33,10 +37,8 @@ class CreateTodoManager implements CreateTodoBaseController {
 
   @override
   void save() {
-    if (formKey.currentState!.validate()) {
-      formKey.currentState!.save();
-      state.pop();
-    }
+    formKey.currentState!.save();
+    Navigation().key.currentState!.pop();
   }
 
   @override
@@ -56,15 +58,13 @@ class CreateTodoManager implements CreateTodoBaseController {
   }
 
   @override
-  Future<bool> onWillPop() async {
+  void onDeleteTap() {
     Navigation().key.currentState!.pop();
-    state.setState(Todo.blank());
-    return false;
   }
 
   @override
-  void onDeleteTap() {
-    Navigation().key.currentState!.pop();
+  Future<void> getTodo(String id) async {
+    state.setState(await repository.getTodo(id));
   }
 }
 
@@ -75,6 +75,8 @@ final createTodoStateHolderProvider =
 
 class CreateTodoStateHolder extends StateNotifier<Todo> {
   CreateTodoStateHolder(super.state);
+
+  final textController = TextEditingController();
 
   void setText(String text) {
     state = state.copyWith(text: text);
@@ -95,19 +97,23 @@ class CreateTodoStateHolder extends StateNotifier<Todo> {
     setDeadline(dateTime);
   }
 
-  /// Удалять можно только созданные задачи. Такие задачи имеют id
+  /// Удалять можно только созданные задачи. Такие задачи имеют время создания
   bool get canBeDeleted => state.createdAt != null;
-
-  void pop() {
-    Navigation().key.currentState!.pop(state);
-    state = Todo.blank();
-  }
 
   void setImportance(Importance importance) {
     state = state.copyWith(importance: importance);
   }
 
   void setState(Todo todo) {
+    if (textController.text != todo.text) {
+      textController.text = todo.text;
+    }
     state = todo;
+  }
+
+  @override
+  void dispose() {
+    textController.dispose();
+    super.dispose();
   }
 }

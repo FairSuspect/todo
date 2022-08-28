@@ -3,21 +3,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:todo/src/managers/repository_manager.dart';
 import 'package:todo/src/repos/todo_repository.dart';
 import 'package:todo/src/routing/deletage.dart';
-import 'package:todo/src/services/local_service/hive.dart';
 import 'package:todo/src/services/navigation.dart';
 import 'package:todo/src/models/todo.dart';
-
 import 'package:todo/src/view/list_todo/todo_list_base_controller.dart';
 
 final todoListManagerProvider = Provider((ref) {
   final todoListManager = TodoListManager(
-    state: ref.watch(todoListStateProvider.notifier),
-    filterState: ref.read(filterProvider),
-    repository: TodoRepository(
-      remoteService: RemoteTodoService(),
-      localService: HiveService(),
-    ),
-  );
+      state: ref.watch(todoListStateProvider.notifier),
+      filterState: ref.read(filterProvider),
+      repository: ref.read(repositoryManager));
+
   todoListManager.getTodos();
   return todoListManager;
 });
@@ -75,13 +70,8 @@ class TodoListManager implements TodoListBaseController {
 
   @override
   Future<void> onFABPressed() async {
-    final router = (Router.of(Navigation().key.currentContext!).routerDelegate
-        as TodoRouterDelegate);
-    if (selectedTodo == null) {
-      router.gotoCreateTodo();
-    } else {
-      router.gotoTodo(selectedTodo!.id);
-    }
+    selectedTodo = null;
+    openTodoEditor();
     // await Navigation().key.currentState!.push<Todo?>(MaterialPageRoute(
     //     builder: (_) => CreateTodoScreen(
     //           todoId: selectedTodo?.id,
@@ -103,13 +93,24 @@ class TodoListManager implements TodoListBaseController {
   @override
   void onTodoSelected(Todo todo) {
     selectedTodo = todo;
-    onFABPressed();
+    openTodoEditor();
   }
 
   @override
   void updateTodo(Todo todo) {
     state.updateTodo(todo);
     repository.putTodo(todo);
+  }
+
+  @override
+  void openTodoEditor() {
+    final router = (Router.of(Navigation().key.currentContext!).routerDelegate
+        as TodoRouterDelegate);
+    if (selectedTodo == null) {
+      router.gotoCreateTodo();
+    } else {
+      router.gotoTodo(selectedTodo!.id);
+    }
   }
 }
 

@@ -10,12 +10,12 @@ class TodoRouteParser extends RouteInformationParser<ParsedRoute> {
     final uri = Uri.parse(path);
 
     if (uri.pathSegments.isEmpty) {
-      return Future.value(ParsedRoute.createTodo());
+      return Future.value(ParsedRoute.main());
     }
     switch (uri.pathSegments[0]) {
       case Paths.editTodo:
         // case Paths.createTodo:
-        if (uri.pathSegments[1].isNotEmpty) {
+        if (uri.pathSegments.length > 1 && uri.pathSegments[1].isNotEmpty) {
           final todoId = uri.pathSegments[1];
           return Future.value(ParsedRoute.editTodo(todoId));
         } else {

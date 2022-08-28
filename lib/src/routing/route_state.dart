@@ -16,10 +16,11 @@ class RouteState extends ChangeNotifier {
 
   String? get todoId => _todoId;
 
-  set todoId(String? todoId) {
+  set todoId(String? value) {
     // Если todoId не обновился - не обновляем страницу
-    if (todoId == _todoId) return;
-    _todoId = todoId;
+    if (value == _todoId) return;
+
+    _todoId = value;
     notifyListeners();
   }
 
