@@ -107,4 +107,12 @@ class HiveService implements LocalService<Todo> {
 
     return todo!;
   }
+
+  @override
+  Future<Todo?> getById(String id) async {
+    final todosBox = await Hive.openBox<Todo>(_todoBoxName);
+    final todo = todosBox.get(id);
+    todosBox.close();
+    return todo;
+  }
 }
