@@ -52,13 +52,13 @@ class TodoListScreen extends StatelessWidget {
                             final id = todos.keys.toList()[index];
 
                             return TodoTile(
-                                key: ValueKey(todos[id]!.id),
+                                key: ValueKey(id),
                                 todo: todos[id]!,
                                 onChanged: (value) {
-                                  controller.onChecked(todos[id]!.id, value);
+                                  controller.onChecked(id, value);
                                 },
                                 onDelete: () {
-                                  controller.delete(todos[id]!.id);
+                                  controller.delete(id);
                                 },
                                 onTap: () {
                                   controller.onTodoSelected(todos[id]!);
