@@ -11,10 +11,7 @@ class TodoRepository implements TodoBaseRepository<Todo> {
   TodoRepository({
     required this.remoteService,
     required this.localService,
-  }) {
-    getTodoList();
-  }
-
+  });
   final TodoService<Todo> remoteService;
   final LocalService<Todo> localService;
 
@@ -72,11 +69,11 @@ class TodoRepository implements TodoBaseRepository<Todo> {
     try {
       remoteTodos = await remoteService.getItemList();
       final localRevision = await localService.getRevision();
-      if (remoteService.lastKnownRevision > localService.lastKnownRevision) {
+      if (remoteService.lastKnownRevision > localRevision) {
         todos = Map.fromIterables(remoteTodos.map((e) => e.id), remoteTodos);
 
         await localService.putMap(todos);
-        onRevisionUpdated(remoteService.lastKnownRevision);
+        await onRevisionUpdated(remoteService.lastKnownRevision);
       } else {
         todos = await localService.getAll();
         remoteService.patchList(todos.values.toList());

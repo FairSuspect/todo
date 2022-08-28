@@ -1,5 +1,3 @@
-import 'package:dio/dio.dart';
-
 import 'dio.dart';
 
 class Api {

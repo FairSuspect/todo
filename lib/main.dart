@@ -8,6 +8,7 @@ import 'package:todo/src/misc/dotenv.dart';
 import 'package:todo/src/misc/theme/theme.dart';
 import 'package:todo/src/routing/deletage.dart';
 import 'package:todo/src/routing/route_information_provider.dart';
+import 'package:todo/src/services/firebase/firebase.dart';
 import 'package:todo/src/services/scaffold_messenger_serivce.dart';
 
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -51,7 +52,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp.router(
       routeInformationParser: TodoRouteParser(),
       routerDelegate: TodoRouterDelegate(),
-      routeInformationProvider: DebugRouteInformationProvider(),
+      routeInformationProvider: AnalyticsRouteInformationProvider(),
       scaffoldMessengerKey: ScaffoldMessengerService().scaffoldMessengerKey,
       // colorScheme: ColorScheme.fromSeed(
       //     seedColor: Color(int.parse(
@@ -60,10 +61,12 @@ class MyApp extends StatelessWidget {
         customColorsLight.copyWith(red: importanceColor),
         layoutColorsLight
       ]),
-      darkTheme: darkTheme,
-      themeMode: ThemeMode.light,
+      darkTheme: darkTheme.copyWith(extensions: [
+        customColorsDark.copyWith(red: importanceColor),
+        layoutColorsDark
+      ]),
+      themeMode: ThemeMode.system,
       onGenerateTitle: (context) => AppLocalizations.of(context).title,
-      locale: Locale("ru", "RU"),
       localizationsDelegates: const [
         AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,

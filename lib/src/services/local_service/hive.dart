@@ -89,7 +89,13 @@ class HiveService implements LocalService<Todo> {
       todosBox.close();
       return {};
     }
-    final localTodos = Map.fromIterables(values.map((e) => e.id), values);
+    final sortedList = values.toList()
+      ..sort(
+        (a, b) => a.createdAt!.compareTo(b.createdAt!),
+      );
+
+    final localTodos =
+        Map.fromIterables(sortedList.map((e) => e.id), sortedList);
     Logger('Hive')
         .log(Level.INFO, 'Got ${localTodos.length} todos from local service');
     todosBox.close();
