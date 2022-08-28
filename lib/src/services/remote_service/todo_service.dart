@@ -2,24 +2,28 @@ import 'package:dio/dio.dart';
 import 'package:todo/src/api/api.dart';
 import 'package:todo/src/models/todo.dart';
 import 'package:todo/src/services/remote_service/api_path.dart';
+import 'package:todo/src/services/remote_service/remote_service.dart';
 
-class TodoService {
+class RemoteTodoService implements TodoService<Todo> {
   int _lastKnownRevision = 0;
 
   static const String _revisionHeader = 'X-Last-Known-Revision';
 
+  @override
   int get lastKnownRevision => _lastKnownRevision;
 
   set lastKnownRevision(int lastKnownRevision) {
     _lastKnownRevision = lastKnownRevision;
   }
 
+  @override
   Future<Todo> getItemById(String id) async {
     final response = await Api().dio.get(ApiPath.getById(id));
 
     return Todo.fromJson(response.data['element']);
   }
 
+  @override
   Future<List<Todo>> getItemList() async {
     final response = await Api().dio.get(ApiPath.getList);
 
@@ -27,6 +31,7 @@ class TodoService {
     return Todo.listFromJson(response.data['list']);
   }
 
+  @override
   Future<List<Todo>> patchList(List<Todo> todos) async {
     final data = todos.map((e) => e.toJson()).toList();
     final response = await Api().dio.patch(
@@ -37,6 +42,7 @@ class TodoService {
     return Todo.listFromJson(response.data['list']);
   }
 
+  @override
   Future<Todo> createTodo(Todo todo) async {
     final todoJson = todo.toJson();
     late final Response response;
@@ -63,6 +69,7 @@ class TodoService {
     return Todo.fromJson(response.data['element']);
   }
 
+  @override
   Future<Todo> updateTodo(Todo todo) async {
     late final Response response;
     try {
@@ -88,6 +95,7 @@ class TodoService {
     return Todo.fromJson(response.data['element']);
   }
 
+  @override
   Future<Todo> deleteTodo(String id) async {
     final response = await Api().dio.delete(
           ApiPath.delete(id),

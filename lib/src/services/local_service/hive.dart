@@ -159,4 +159,12 @@ class HiveService implements LocalService<Todo> {
     );
     return Map.fromIterables(filteredList.map((e) => e.id), filteredList);
   }
+
+  @override
+  Future<Todo?> getById(String id) async {
+    final todosBox = await Hive.openBox<Todo>(_todoBoxName);
+    final todo = todosBox.get(id);
+
+    return todo;
+  }
 }

@@ -9,4 +9,5 @@ abstract class LocalService<T> {
   Future<T> deleteValue(String id);
   Future<Map<String, T>> getAll();
   Future<T> createValue(T value);
+  Future<T?> getById(String id);
 }

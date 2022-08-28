@@ -2,7 +2,7 @@ import 'package:todo/src/models/todo.dart';
 import 'package:todo/src/services/remote_service/todo_service.dart';
 import 'package:uuid/uuid.dart';
 
-class MockTodoService extends TodoService {
+class MockTodoService extends RemoteTodoService {
   MockTodoService();
 
   List<Todo> _todos = List.generate(

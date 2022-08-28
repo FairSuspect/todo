@@ -14,7 +14,7 @@ final todoListManagerProvider = Provider((ref) {
     state: ref.watch(todoListStateProvider.notifier),
     filterState: ref.read(filterProvider),
     repository: TodoRepository(
-      remoteService: TodoService(),
+      remoteService: RemoteTodoService(),
       localService: HiveService(),
     ),
   );
@@ -56,8 +56,7 @@ class TodoListManager implements TodoListBaseController {
 
   @override
   Future<void> getTodos() async {
-    await repository.getTodoList();
-    final todos = repository.todos;
+    final todos = await repository.getTodoList();
 
     state.updateMap(todos);
   }
