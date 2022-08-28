@@ -1,32 +1,44 @@
-name: Builds
+name: Flutter CI
+
+# This workflow is triggered on pushes to the repository.
+
 on:
   push:
-  pull_request:
+#  pull_request:
 
-# Declare default permissions as read only.
-permissions: read-all
+
 
 jobs:
-  build:
-    name: Build ${{ matrix.target }}
-    runs-on: macos-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        target: ["apk --debug", "appbundle --debug", "ios --no-codesign"]
+  analyze:
+    name: Run analyzer and formatter
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
-      # Set up Flutter.
-      - name: Clone Flutter repository with master channel
-        uses: subosito/flutter-action@6c2e035f2692eeac890d854df95630c72673f130
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
         with:
-          channel: master
-      - run: flutter config --no-enable-macos-desktop
-      - run: flutter config --no-enable-web
-      - run: flutter doctor -v
-
-      # Checkout gallery code and get packages.
-      - name: Checkout gallery code
-        uses: actions/checkout@d171c3b028d844f2bf14e9fdec0c58114451e4bf
-      - run: flutter pub get -v
-
-      - run: flutter build ${{ matrix.target }}
+          flutter-version: '3.0.5'
+          cache: true
+      - run: flutter pub get
+      - run: flutter analyze
+      - run: flutter format --set-exit-if-changed .
+  test:
+    name: Run tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.0.5'
+          cache: true
+      - run: flutter pub get
+      - run: flutter test
+        id: test
+      - if: ${{ failure() && steps.test.conclusion == 'failure' }}
+        name: 'Upload test failures'
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-failures
+          path: test/failures
+          retention-days: 5
