@@ -29,8 +29,10 @@ jobs:
       - uses: actions/checkout@v3
       - uses: subosito/flutter-action@v2
         with:
-          cnannel: stable
+          channel: stable
       - run: flutter pub get
+      - run: flutter pub run build_runner build --delete-conflicting-outputs
+
       - run: flutter test
         id: test
       - if: ${{ failure() && steps.test.conclusion == 'failure' }}
@@ -56,6 +58,12 @@ jobs:
       uses: subosito/flutter-action@v2
       with:
         channel: stable
+    - name: generate .env
+      uses: "finnp/create-file-action@master"
+      env:
+        FILE_NAME: ".env"
+        FILE_DATA: "BASE_URL=${{secrets.BASE_URL}}\nTOKEN=${{secrets.API_TOKEN}}"
+    - run: flutter pub run build_runner build --delete-conflicting-outputs
     - run: flutter build apk --release
     - name: upload artifact to Firebase App Distribution
       uses: wzieba/Firebase-Distribution-Github-Action@v1
