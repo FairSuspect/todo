@@ -26,8 +26,8 @@ jobs:
       - run: flutter pub get
       - name: GitHub Action for Firebase
         uses: w9jds/firebase-action@v11.5.0
-        with:
-          token: ${{secrets.FIREBASE_TOKEN}}
+        env:
+          FIREBASE_TOKEN: ${{secrets.FIREBASE_TOKEN}}
       - run: dart pub global activate flutterfire_cli
       - run: flutterfire configure -p ${{secrets.PROJECT_ID}} -a ${{secrets.PACKAGE_NAME}} -i ${{secrets.PACKAGE_NAME}} -m ${{secrets.PACKAGE_NAME}}  --platforms=android -t ${{secrets.FIREBASE_TOKEN}} -y
       - run: flutter gen-l10n
