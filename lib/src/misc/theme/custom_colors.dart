@@ -19,7 +19,7 @@ class CustomColors extends ThemeExtension<CustomColors> {
   @override
   ThemeExtension<CustomColors> copyWith(
       {Color? red,
-      Color? overlayColor,
+      Color? green,
       Color? blue,
       Color? gray,
       Color? grayLight,
@@ -28,7 +28,7 @@ class CustomColors extends ThemeExtension<CustomColors> {
       red: red ?? this.red,
       blue: blue ?? this.blue,
       gray: gray ?? this.gray,
-      green: overlayColor ?? this.green,
+      green: green ?? this.green,
       grayLight: grayLight ?? this.grayLight,
       white: white ?? this.white,
     );

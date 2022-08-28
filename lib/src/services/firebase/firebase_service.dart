@@ -30,7 +30,6 @@ class FirebaseService {
   static fetchImportanceColor() {
     final value =
         int.parse(FirebaseRemoteConfig.instance.getString(_importanceColorKey));
-    print(FirebaseRemoteConfig.instance.getString(_importanceColorKey));
     return Color(value);
   }
 }

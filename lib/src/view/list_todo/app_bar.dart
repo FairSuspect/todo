@@ -3,7 +3,6 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:todo/src/managers/todo_list_manager.dart';
-import 'package:todo/src/view/list_todo/todo_list_base_controller.dart';
 
 class AppBarDelegate extends SliverPersistentHeaderDelegate {
   final String title;
