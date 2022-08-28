@@ -49,7 +49,7 @@ class TodoListManager implements TodoListBaseController {
 
   @override
   void createTodoFromText(String text) {
-    final Todo todo = Todo.createFromText(text: text);
+    final todo = Todo.createFromText(text: text);
     state.createTodo(todo);
     repository.createTodo(todo);
   }
@@ -75,7 +75,7 @@ class TodoListManager implements TodoListBaseController {
 
   @override
   Future<void> onFABPressed() async {
-    final Todo? newTodo = await Navigation().key.currentState!.push<Todo?>(
+    final newTodo = await Navigation().key.currentState!.push<Todo?>(
         MaterialPageRoute(builder: (_) => const CreateTodoScreen()));
     if (newTodo == null) {
       selectedTodo = null;
