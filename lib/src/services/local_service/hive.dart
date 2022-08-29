@@ -70,7 +70,7 @@ class HiveService implements LocalService<Todo> {
   }
 
   @override
-  Future<Todo> deleteValue(String key) async {
+  Future<Todo?> deleteValue(String key) async {
     final todosBox = await Hive.openBox<Todo>(_todoBoxName);
     final deletedValue = todosBox.get(key);
     await todosBox.delete(key);
@@ -78,7 +78,7 @@ class HiveService implements LocalService<Todo> {
     todosBox.close();
     lastKnownRevision++;
 
-    return deletedValue!;
+    return deletedValue;
   }
 
   @override

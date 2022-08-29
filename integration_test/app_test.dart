@@ -6,13 +6,14 @@ import 'package:todo/main.dart' as app;
 import 'package:todo/src/models/todo.dart';
 import 'package:todo/src/view/create_todo/create_todo_screen.dart';
 import 'package:todo/src/view/todo_tile.dart';
+import 'package:uuid/uuid.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   group('end-to-end test', () {
     testWidgets(
-      "Render main page with 2 todos",
+      "Rendering, creating, editing and deletings tasks",
       (widgetTester) async {
         await app.main();
         // Время на выполнение запроса
@@ -32,7 +33,7 @@ void main() {
         // Выбираем любую задачу (здесь последнюю)
         await widgetTester.tap(todoTileFinder.last);
         await widgetTester.pumpAndSettle(const Duration(seconds: 1));
-        const text = 'Edited text';
+        final text = 'Edited todo ${const Uuid().v4()}';
         // Меняем текст
         await widgetTester.enterText(textFieldFinder, text);
         await widgetTester.pumpAndSettle(const Duration(milliseconds: 600));
@@ -55,6 +56,24 @@ void main() {
         // Ищем отредактированную задачу
         final newTextFinder = find.text(text);
         expect(newTextFinder, findsOneWidget);
+
+        // Открываем страницу создания
+        await widgetTester.tap(fabFinder);
+        await widgetTester.pumpAndSettle(const Duration(milliseconds: 500));
+        final text2 = "Task ${const Uuid().v4()}";
+        await widgetTester.enterText(textFieldFinder, text2);
+        // Создаем задачу
+        await widgetTester.pumpAndSettle(const Duration(milliseconds: 200));
+        await widgetTester.tap(saveButton);
+        await widgetTester.pumpAndSettle(const Duration(milliseconds: 500));
+        // Поиск задачи
+        final newTaskFinder = find.text(text2);
+        await widgetTester.ensureVisible(newTaskFinder);
+        expect(newTaskFinder, findsOneWidget);
+        // Удаление задачи через свайп
+        await widgetTester.drag(newTaskFinder, const Offset(-1000, 0));
+        await widgetTester.pumpAndSettle(const Duration(milliseconds: 300));
+        expect(newTaskFinder, findsNothing);
       },
     );
   });

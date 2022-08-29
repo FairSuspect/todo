@@ -6,7 +6,7 @@ abstract class LocalService<T> {
 
   Future<Map<String, T>> putMap(Map<String, T> list);
   Future<T> updateValue(T value);
-  Future<T> deleteValue(String id);
+  Future<T?> deleteValue(String id);
   Future<Map<String, T>> getAll();
   Future<T> createValue(T value);
   Future<T?> getById(String id);
