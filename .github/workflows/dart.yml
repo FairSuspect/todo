@@ -20,7 +20,7 @@ jobs:
         uses: "finnp/create-file-action@master"
         env:
           FILE_NAME: ".env"
-          FILE_DATA: "BASE_URL=${{secrets.BASE_URL}}\nTOKEN=${{secrets.API_TOKEN}}"
+          FILE_DATA: ${{secrets.DOT_ENV}}
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
