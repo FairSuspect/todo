@@ -5,7 +5,8 @@ import 'package:todo/src/services/remote_service/remote_service.dart';
 
 final repositoryManager = Provider(
   (ref) {
+    final hiveService = HiveService()..init();
     return TodoRepository(
-        remoteService: RemoteTodoService(), localService: HiveService());
+        remoteService: RemoteTodoService(), localService: hiveService);
   },
 );

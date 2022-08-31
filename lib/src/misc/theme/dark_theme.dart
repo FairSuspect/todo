@@ -9,7 +9,6 @@ final darkTheme = ThemeData(
   appBarTheme: const AppBarTheme(backgroundColor: _backPrimary),
   canvasColor: _backElevated,
   listTileTheme: const ListTileThemeData(
-    // tileColor: _backSecondary,
     textColor: _labelPrimary,
   ),
   toggleableActiveColor: _blue,

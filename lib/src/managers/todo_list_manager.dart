@@ -94,22 +94,6 @@ class TodoListManager implements TodoListBaseController {
   Future<void> onFABPressed() async {
     selectedTodo = null;
     openTodoEditor();
-    // await Navigation().key.currentState!.push<Todo?>(MaterialPageRoute(
-    //     builder: (_) => CreateTodoScreen(
-    //           todoId: selectedTodo?.id,
-    //         )));
-    // if (newTodo == null) {
-    //   selectedTodo = null;
-    //   return;
-    // }
-    // if (selectedTodo == null) {
-    //   createTodo(newTodo);
-    //   return;
-    // } else {
-    //   updateTodo(newTodo);
-    //   selectedTodo = null;
-    //   return;
-    // }
   }
 
   @override

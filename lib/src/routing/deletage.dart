@@ -37,7 +37,6 @@ class TodoRouterDelegate extends RouterDelegate<ParsedRoute>
   Widget build(BuildContext context) {
     return Navigator(
       onPopPage: (route, result) => route.didPop(result),
-      // transitionDelegate: BookshelfTransitionDelegate(),
       key: Navigation().key,
       pages: [
         // Главная страница всегда отрисовывается для pop из страницы редактирования

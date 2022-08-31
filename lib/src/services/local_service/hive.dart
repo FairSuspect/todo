@@ -6,11 +6,10 @@ import 'local_service.dart';
 typedef LocalTodos = Map<String, Todo>;
 
 class HiveService implements LocalService<Todo> {
+  final _logger = Logger("Hive");
   static const String _todoBoxName = "todos";
   static const String _revisionBoxName = "Revision";
   static const String _revisionKey = "revision";
-
-  HiveService();
 
   Future<void> init() async {
     _lastKnownRevision = await getRevision();
@@ -29,21 +28,19 @@ class HiveService implements LocalService<Todo> {
 
   @override
   Future<void> storeRevision(int revision) async {
-    final revisionBox = await Hive.openBox<int>(_revisionBoxName);
-    Logger("Hive")
-        .log(Level.INFO, "Updating revision ($revision) in local service");
-
-    await revisionBox.put(_revisionKey, lastKnownRevision);
-    revisionBox.close();
     _lastKnownRevision = revision;
+    final revisionBox = await Hive.openBox<int>(_revisionBoxName);
+    _logger.info("Updating revision ($revision) in local service");
+
+    await revisionBox.put(_revisionKey, revision);
+    revisionBox.close();
   }
 
   @override
   Future<int> getRevision() async {
     final revisionBox = await Hive.openBox<int>(_revisionBoxName);
     final int storedRevision = revisionBox.get(_revisionKey) ?? 0;
-    Logger("Hive").log(
-        Level.INFO, "Fetching revision ($storedRevision) from local service");
+    _logger.info("Revision stored in local service: $storedRevision");
     revisionBox.close();
     return storedRevision;
   }
@@ -96,8 +93,7 @@ class HiveService implements LocalService<Todo> {
 
     final localTodos =
         Map.fromIterables(sortedList.map((e) => e.id), sortedList);
-    Logger('Hive')
-        .log(Level.INFO, 'Got ${localTodos.length} todos from local service');
+    _logger.info('Got ${localTodos.length} todos from local service');
     todosBox.close();
     return localTodos;
   }
