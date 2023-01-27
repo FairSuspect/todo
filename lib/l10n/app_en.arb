@@ -1,0 +1,14 @@
+{
+    "title": "Done",
+    "done": "Done",
+    "myTasks": "My tasks",
+    "save": "Save",
+    "whatToDo": "What need to do...",
+    "makeBy": "Make by",
+    "importance": "Importance",
+    "newTask": "New",
+    "importanceNone": "None",
+    "importanceBasic": "Basic",
+    "importanceHigh": "High",
+    "delete": "Delete"
+}
