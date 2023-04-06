@@ -1,0 +1,15 @@
+{
+    "title": "Сделано",
+    "done": "Выполнено",
+    "myTasks": "Мои дела",
+    "save": "Сохранить",
+    "whatToDo": "Что надо сделать...",
+    "makeBy": "Сделать до",
+    "importance": "Важность",
+    "newTask": "Новое",
+    "importanceNone": "Нет",
+    "importanceBasic": "Низкий",
+    "importanceHigh": "Высокий",
+    "delete": "Удалить"
+
+}
